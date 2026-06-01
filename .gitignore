@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Data
+*.csv
+*.dat
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.pkl
+*.pickle
+data/raw/
+data/processed/
+
+# Models
+*.pt
+*.pth
+*.onnx
+*.pb
+checkpoints/
+runs/
+wandb/
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Misc
+*.pdf
+!paper/figures/*.pdf

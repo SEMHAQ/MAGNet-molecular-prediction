@@ -1,0 +1,125 @@
+% Computational Biology and Chemistry - Elsevier Paper Template
+% Document class: review (double column)
+\documentclass[preprint,12pt]{elsarticle}
+
+% Packages
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{subcaption}
+\usepackage{color}
+\usepackage{url}
+
+% Custom commands
+\newcommand{\ie}{\textit{i.e.}}
+\newcommand{\eg}{\textit{e.g.}}
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\R}{\mathbb{R}}
+
+\journal{Computational Biology and Chemistry}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{[Your Paper Title Here]}
+
+\author[inst1]{First Author\corref{cor1}}
+\ead{first.author@university.edu}
+\author[inst1]{Second Author}
+\author[inst2]{Third Author}
+
+\cortext[cor1]{Corresponding author}
+\affiliation[inst1]{organization={University Name},
+                     city={City},
+                     country={Country}}
+\affiliation[inst2]{organization={Another University},
+                     city={City},
+                     country={Country}}
+
+\begin{abstract}
+[Your abstract here - approximately 200-250 words]
+\end{abstract}
+
+\begin{keyword}
+computational biology \sep bioinformatics \sep [keyword3] \sep [keyword4] \sep [keyword5]
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}
+\label{sec:intro}
+
+[Introduction text]
+
+\section{Related Work}
+\label{sec:related}
+
+[Related work text]
+
+\section{Methodology}
+\label{sec:method}
+
+[Methodology text]
+
+\subsection{Problem Formulation}
+\label{subsec:problem}
+
+[Problem formulation]
+
+\subsection{Proposed Method}
+\label{subsec:proposed}
+
+[Proposed method description]
+
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Experimental Setup}
+\label{subsec:setup}
+
+[Experimental setup]
+
+\subsection{Datasets}
+\label{subsec:datasets}
+
+[Dataset description]
+
+\subsection{Baselines}
+\label{subsec:baselines}
+
+[Baseline methods]
+
+\subsection{Results}
+\label{subsec:results}
+
+[Results and analysis]
+
+\section{Discussion}
+\label{sec:discussion}
+
+[Discussion]
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+[Conclusion]
+
+\section*{CRediT Authorship Contribution Statement}
+[Author contributions]
+
+\section*{Declaration of Competing Interest}
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+\section*{Acknowledgements}
+[Acknowledgements]
+
+\bibliographystyle{elsarticle-num}
+\bibliography{references}
+
+\end{document}

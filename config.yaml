@@ -1,0 +1,38 @@
+# Project Configuration
+
+# Experiment settings
+experiment:
+  name: "compbiochem_experiment"
+  seed: 42
+  device: "cuda"  # or "cpu"
+
+# Data settings
+data:
+  root_dir: "./data"
+  batch_size: 32
+  num_workers: 4
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1
+
+# Model settings
+model:
+  name: "baseline"
+  input_dim: 128
+  hidden_dim: 256
+  output_dim: 64
+  dropout: 0.1
+
+# Training settings
+training:
+  epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler: "cosine"
+  early_stopping: 10
+
+# Output settings
+output:
+  checkpoint_dir: "./checkpoints"
+  log_dir: "./runs"
+  result_dir: "./results"
