@@ -1,10 +1,10 @@
-% Computational Biology and Chemistry - Elsevier Paper Template
-% Document class: review (double column)
-\documentclass[preprint,12pt]{elsarticle}
+%%
+%% Elsevier CAS Double Column Template for Computational Biology and Chemistry
+%%
+\documentclass[a4paper,fleqn]{cas-dc}
 
-% Packages
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{graphicx}
+\usepackage[authoryear,longnamesfirst]{natbib}
+\usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{algorithm}
@@ -15,67 +15,143 @@
 \usepackage{color}
 \usepackage{url}
 
+%%% Author macros
+\def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
+\tsc{WGM}
+\tsc{QE}
+%%%
+
 % Custom commands
 \newcommand{\ie}{\textit{i.e.}}
 \newcommand{\eg}{\textit{e.g.}}
 \newcommand{\etal}{\textit{et al.}}
 \newcommand{\R}{\mathbb{R}}
 
-\journal{Computational Biology and Chemistry}
-
 \begin{document}
+\let\WriteBookmarks\relax
+\def\floatpagepagefraction{1}
+\def\textpagefraction{.001}
 
-\begin{frontmatter}
+% Short title
+\shorttitle{[Short Title]}
 
-\title{[Your Paper Title Here]}
+% Short author
+\shortauthors{[First Author et al.]}
 
-\author[inst1]{First Author\corref{cor1}}
+% Main title of the paper
+\title[mode=title]{[Your Paper Title Here]}
+
+% Title footnote mark
+\tnotemark[1]
+
+% Title footnote
+\tnotetext[1]{This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.}
+
+% First author
+\author[1]{First Author}[%
+  orcid=0000-0000-0000-0000,
+  style=chinese
+]
+
+% Corresponding author indication
+\cormark[1]
+
+% Footnote of the first author
+\fnmark[1]
+
+% Email id of the first author
 \ead{first.author@university.edu}
-\author[inst1]{Second Author}
-\author[inst2]{Third Author}
 
-\cortext[cor1]{Corresponding author}
-\affiliation[inst1]{organization={University Name},
-                     city={City},
-                     country={Country}}
-\affiliation[inst2]{organization={Another University},
-                     city={City},
-                     country={Country}}
+% URL of the first author
+\ead[url]{https://university.edu/~firstauthor}
 
+% Credit authorship
+\credit{Conceptualization, Methodology, Software, Writing - original draft}
+
+% Address/affiliation
+\affiliation[1]{%
+  organization={University Name},
+  addressline={Address},
+  city={City},
+  postcode={000000},
+  state={State},
+  country={Country}
+}
+
+% Second author
+\author[2]{Second Author}
+
+% Footnote of the second author
+\fnmark[2]
+
+% Email id of the second author
+\ead{second.author@university.edu}
+
+% Credit authorship
+\credit{Data curation, Validation, Writing - review \& editing}
+
+% Address/affiliation
+\affiliation[2]{%
+  organization={Another University},
+  addressline={Address},
+  city={City},
+  postcode={000000},
+  state={State},
+  country={Country}
+}
+
+% Corresponding author text
+\cortext[1]{Corresponding author.}
+
+% Footnote text
+\fntext[1]{}
+
+% Abstract
 \begin{abstract}
-[Your abstract here - approximately 200-250 words]
+[Your abstract here -- approximately 200--250 words. Describe the problem, proposed method, experimental setup, and key results.]
 \end{abstract}
 
-\begin{keyword}
-computational biology \sep bioinformatics \sep [keyword3] \sep [keyword4] \sep [keyword5]
-\end{keyword}
+% Research highlights
+\begin{highlights}
+\item [Highlight 1: key contribution or finding]
+\item [Highlight 2: methodological innovation]
+\item [Highlight 3: experimental result or impact]
+\end{highlights}
 
-\end{frontmatter}
+% Keywords
+\begin{keywords}
+computational biology \sep bioinformatics \sep [keyword3] \sep [keyword4] \sep [keyword5]
+\end{keywords}
+
+\maketitle
+
+%% ============================================================
+%% Main Text
+%% ============================================================
 
 \section{Introduction}
 \label{sec:intro}
 
-[Introduction text]
+[Introduction text. Provide background, motivation, and state the contributions of this work.]
 
 \section{Related Work}
 \label{sec:related}
 
-[Related work text]
+[Review relevant literature. Organize by topic or methodology.]
 
 \section{Methodology}
 \label{sec:method}
 
-[Methodology text]
-
 \subsection{Problem Formulation}
 \label{subsec:problem}
 
-[Problem formulation]
+[Define the problem formally. Use mathematical notation as needed, \eg:]
+% Let $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{N}$ denote the training set.
 
 \subsection{Proposed Method}
 \label{subsec:proposed}
 
-[Proposed method description]
+[Describe the proposed method in detail.]
 
 \section{Experiments}
 \label{sec:experiments}
@@ -83,35 +159,66 @@ computational biology \sep bioinformatics \sep [keyword3] \sep [keyword4] \sep [
 \subsection{Experimental Setup}
 \label{subsec:setup}
 
-[Experimental setup]
+[Describe hardware, software, hyperparameters, and training configuration.]
 
 \subsection{Datasets}
 \label{subsec:datasets}
 
-[Dataset description]
+[Describe datasets used. Include a summary table.]
+
+% Example table:
+% \begin{table}[htbp]
+% \caption{Dataset statistics}\label{tab:datasets}
+% \begin{tabular*}{\tblwidth}{@{}lccc@{}}
+% \toprule
+% Dataset & Samples & Features & Classes \\
+% \midrule
+% Dataset A & 1000 & 128 & 2 \\
+% Dataset B & 5000 & 256 & 10 \\
+% \bottomrule
+% \end{tabular*}
+% \end{table}
 
 \subsection{Baselines}
 \label{subsec:baselines}
 
-[Baseline methods]
+[Describe baseline methods for comparison.]
 
 \subsection{Results}
 \label{subsec:results}
 
-[Results and analysis]
+[Present results with tables and figures. Include statistical significance tests where appropriate.]
+
+% Example results table:
+% \begin{table}[htbp]
+% \caption{Comparison with baselines}\label{tab:results}
+% \begin{tabular*}{\tblwidth}{@{}lcccc@{}}
+% \toprule
+% Method & Accuracy & Precision & Recall & F1 \\
+% \midrule
+% Baseline 1 & 0.85 & 0.83 & 0.87 & 0.85 \\
+% Baseline 2 & 0.88 & 0.86 & 0.89 & 0.87 \\
+% \textbf{Ours} & \textbf{0.92} & \textbf{0.91} & \textbf{0.93} & \textbf{0.92} \\
+% \bottomrule
+% \end{tabular*}
+% \end{table}
 
 \section{Discussion}
 \label{sec:discussion}
 
-[Discussion]
+[Discuss implications, limitations, and future directions.]
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-[Conclusion]
+[Summarize contributions and findings.]
 
-\section*{CRediT Authorship Contribution Statement}
-[Author contributions]
+% Credit authorship contribution statement
+\printcredits
+
+%% ============================================================
+%% Back Matter
+%% ============================================================
 
 \section*{Declaration of Competing Interest}
 The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
@@ -119,7 +226,19 @@ The authors declare that they have no known competing financial interests or per
 \section*{Acknowledgements}
 [Acknowledgements]
 
-\bibliographystyle{elsarticle-num}
+%% ============================================================
+%% Bibliography
+%% ============================================================
+
+\bibliographystyle{cas-model2-names}
 \bibliography{references}
+
+%% ============================================================
+%% Appendix (uncomment if needed)
+%% ============================================================
+
+% \appendix
+% \section{Supplementary Material}
+% \label{app:supplementary}
 
 \end{document}
