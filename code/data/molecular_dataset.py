@@ -184,26 +184,32 @@ class SyntheticMolecularDataset(Dataset):
             halogen_cols = [4, 5, 6, 7]  # F, Cl, Br, I
             halogen_count = node_features[:, halogen_cols].sum()
             aromatic_count = node_features[:, 9].sum()  # Aromatic feature
-            score = (halogen_count * 2 + aromatic_count) / (n_atoms + 1)
-            threshold = 0.3
+            # Also use graph connectivity (density)
+            edge_density = adj.sum() / (n_atoms * n_atoms)
+            score = (halogen_count * 2 + aromatic_count + edge_density * 10) / (n_atoms + 1)
+            threshold = 0.35
 
         elif self.property_type == 'solubility':
             # Solubility correlates with N, O content
             hydrophilic_cols = [1, 2]  # N, O
             hydrophilic_count = node_features[:, hydrophilic_cols].sum()
-            score = hydrophilic_count / (n_atoms + 1)
-            threshold = 0.2
-
-        else:  # binding
-            # Binding correlates with heteroatom content
-            heteroatom_cols = [1, 2, 3]  # N, O, S
-            heteroatom_count = node_features[:, heteroatom_cols].sum()
-            score = heteroatom_count / (n_atoms + 1)
+            # Also consider molecular size (smaller = more soluble)
+            size_factor = 1.0 / (n_atoms + 1)
+            score = (hydrophilic_count + size_factor * 10) / (n_atoms + 1)
             threshold = 0.25
 
-        # Add noise
+        else:  # binding
+            # Binding correlates with heteroatom content and ring structures
+            heteroatom_cols = [1, 2, 3]  # N, O, S
+            heteroatom_count = node_features[:, heteroatom_cols].sum()
+            # Ring count approximation
+            ring_indicator = node_features[:, 9].sum()  # Aromatic feature
+            score = (heteroatom_count + ring_indicator * 2) / (n_atoms + 1)
+            threshold = 0.3
+
+        # Add noise (but keep it learnable)
         if rng.rand() < prop_params['noise_level']:
-            score = 1.0 - score
+            score = score + rng.normal(0, 0.1)
 
         return int(score > threshold)
 
