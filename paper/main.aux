@@ -1,0 +1,145 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\csgdef{mark@title}{1}
+\orcidauthor{0000-0000-0000-0000}{Huanjie Yu}
+\csgdef{mark@corau1}{1}
+\csgdef{mark@fnau1}{1}
+\emailauthor{2990280345@qq.com}{Huanjie Yu}
+\creditauthor{Conceptualization, Methodology, Software, Validation, Formal analysis, Investigation, Writing -- original draft, Visualization}{Huanjie Yu}
+\citation{wu2018moleculenet}
+\citation{yang2019analyzing}
+\citation{weininger1988smiles}
+\citation{wu2021comprehensive,zhang2020graph}
+\citation{gilmer2017neural}
+\citation{kipf2017semi}
+\citation{velickovic2018graph}
+\citation{xu2018powerful}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\citation{ma2022multi}
+\citation{chen2022multi}
+\citation{ying2021transformer,rong2020self}
+\citation{liu2021graph}
+\citation{wu2021comprehensive}
+\citation{duvenaud2015convolutional}
+\citation{gilmer2017neural}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Graph Neural Networks for Molecular Property Prediction}{2}{subsection.2.1}\protected@file@percent }
+\citation{kipf2017semi}
+\citation{velickovic2018graph}
+\citation{xu2018powerful}
+\citation{wu2018moleculenet}
+\citation{schutt2017schnet}
+\citation{yang2019analyzing}
+\citation{hamilton2017inductive}
+\citation{ma2022multi}
+\citation{chen2022multi}
+\citation{ying2021transformer}
+\citation{rong2020self}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Multi-Scale Graph Neural Networks}{3}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Graph Transformers}{3}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Methodology}{3}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{3}{Methodology}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Problem Formulation}{3}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:problem}{{3.1}{3}{Problem Formulation}{subsection.3.1}{}}
+\newlabel{eq:bce_loss}{{1}{3}{Problem Formulation}{equation.3.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Overview of the MAGNet{} architecture. The input molecular graph is processed by a multi-scale GNN to extract features at different topological depths (1-hop, 2-hop, 3-hop). The cross-scale attention mechanism fuses these features using learned gating and multi-head attention. The attention pooling module produces a fixed-size graph-level representation using learnable query vectors. Finally, an MLP classifier head produces the property prediction.}}{4}{figure.1}\protected@file@percent }
+\newlabel{fig:architecture}{{1}{4}{Overview of the \modelname {} architecture. The input molecular graph is processed by a multi-scale GNN to extract features at different topological depths (1-hop, 2-hop, 3-hop). The cross-scale attention mechanism fuses these features using learned gating and multi-head attention. The attention pooling module produces a fixed-size graph-level representation using learnable query vectors. Finally, an MLP classifier head produces the property prediction}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Proposed Architecture}{4}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:architecture}{{3.2}{4}{Proposed Architecture}{subsection.3.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Multi-Scale Graph Neural Network}{4}{subsubsection.3.2.1}\protected@file@percent }
+\newlabel{eq:input_proj}{{2}{4}{Multi-Scale Graph Neural Network}{equation.3.2}{}}
+\newlabel{eq:conv}{{3}{4}{Multi-Scale Graph Neural Network}{equation.3.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Cross-Scale Attention}{5}{subsubsection.3.2.2}\protected@file@percent }
+\newlabel{eq:gate}{{4}{5}{Cross-Scale Attention}{equation.3.4}{}}
+\newlabel{eq:gated}{{5}{5}{Cross-Scale Attention}{equation.3.5}{}}
+\newlabel{eq:attention}{{6}{5}{Cross-Scale Attention}{equation.3.6}{}}
+\newlabel{eq:fused}{{7}{5}{Cross-Scale Attention}{equation.3.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.3}Attention Pooling}{5}{subsubsection.3.2.3}\protected@file@percent }
+\newlabel{eq:pooling}{{8}{5}{Attention Pooling}{equation.3.8}{}}
+\newlabel{eq:graph_repr}{{9}{5}{Attention Pooling}{equation.3.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.4}Classifier Head}{5}{subsubsection.3.2.4}\protected@file@percent }
+\newlabel{eq:classifier}{{10}{5}{Classifier Head}{equation.3.10}{}}
+\citation{kipf2017semi}
+\citation{velickovic2018graph}
+\citation{kingma2015adam}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Performance comparison on molecular toxicity prediction. Best results are shown in \textbf  {bold}.}}{6}{table.1}\protected@file@percent }
+\newlabel{tab:main_results}{{1}{6}{Performance comparison on molecular toxicity prediction. Best results are shown in \textbf {bold}}{table.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{6}{section.4}\protected@file@percent }
+\newlabel{sec:experiments}{{4}{6}{Experiments}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Experimental Setup}{6}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:setup}{{4.1}{6}{Experimental Setup}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Dataset}{6}{subsubsection.4.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Baselines}{6}{subsubsection.4.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Implementation Details}{6}{subsubsection.4.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Main Results}{6}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:results}{{4.2}{6}{Main Results}{subsection.4.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Training efficiency comparison. Training time is measured on a single NVIDIA GPU.}}{7}{table.2}\protected@file@percent }
+\newlabel{tab:efficiency}{{2}{7}{Training efficiency comparison. Training time is measured on a single NVIDIA GPU}{table.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Ablation study on the number of scales. All models use 4 attention heads.}}{7}{table.3}\protected@file@percent }
+\newlabel{tab:ablation_scales}{{3}{7}{Ablation study on the number of scales. All models use 4 attention heads}{table.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Ablation study on the number of attention heads. All models use 3 scales.}}{7}{table.4}\protected@file@percent }
+\newlabel{tab:ablation_heads}{{4}{7}{Ablation study on the number of attention heads. All models use 3 scales}{table.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Training Efficiency}{7}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:efficiency}{{4.3}{7}{Training Efficiency}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Ablation Study}{7}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:ablation}{{4.4}{7}{Ablation Study}{subsection.4.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}Effect of Multi-Scale Feature Extraction}{7}{subsubsection.4.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}Effect of Attention Heads}{7}{subsubsection.4.4.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Training curves for all models. (a) Training loss over epochs. (b) Validation AUROC over epochs. MAGNet{} converges faster than baseline architectures.}}{8}{figure.2}\protected@file@percent }
+\newlabel{fig:training}{{2}{8}{Training curves for all models. (a) Training loss over epochs. (b) Validation AUROC over epochs. \modelname {} converges faster than baseline architectures}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Visualization}{8}{subsection.4.5}\protected@file@percent }
+\newlabel{sec:visualization}{{4.5}{8}{Visualization}{subsection.4.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion}{8}{section.5}\protected@file@percent }
+\newlabel{sec:discussion}{{5}{8}{Discussion}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Key Findings}{8}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Comparison with Existing Approaches}{8}{subsection.5.2}\protected@file@percent }
+\citation{wu2018moleculenet}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Multi-metric performance comparison of all models. MAGNet{} achieves the best performance across all metrics.}}{9}{figure.3}\protected@file@percent }
+\newlabel{fig:comparison}{{3}{9}{Multi-metric performance comparison of all models. \modelname {} achieves the best performance across all metrics}{figure.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Ablation study on the number of scales. Performance generally improves with more scales, with 4 scales achieving the best accuracy.}}{9}{figure.4}\protected@file@percent }
+\newlabel{fig:ablation_scales}{{4}{9}{Ablation study on the number of scales. Performance generally improves with more scales, with 4 scales achieving the best accuracy}{figure.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Ablation study on the number of attention heads. 2 heads provide the best performance, while too many heads (8) lead to overfitting.}}{10}{figure.5}\protected@file@percent }
+\newlabel{fig:ablation_heads}{{5}{10}{Ablation study on the number of attention heads. 2 heads provide the best performance, while too many heads (8) lead to overfitting}{figure.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Limitations and Future Work}{10}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{10}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{10}{Conclusion}{section.6}{}}
+\bibstyle{cas-model2-names}
+\bibdata{references}
+\bibcite{chen2022multi}{{1}{2022}{{Chen et~al.}}{{Chen, Wei, Li and Chen}}}
+\bibcite{duvenaud2015convolutional}{{2}{2015}{{Duvenaud et~al.}}{{Duvenaud, Maclaurin, Iparraguirre, Bombarell, Hirzel, Aspuru-Guzik and Adams}}}
+\bibcite{gilmer2017neural}{{3}{2017}{{Gilmer et~al.}}{{Gilmer, Schoenholz, Riley, Vinyals and Dahl}}}
+\bibcite{hamilton2017inductive}{{4}{2017}{{Hamilton et~al.}}{{Hamilton, Ying and Leskovec}}}
+\bibcite{kingma2015adam}{{5}{2015}{{Kingma and Ba}}{{}}}
+\bibcite{kipf2017semi}{{6}{2017}{{Kipf and Welling}}{{}}}
+\bibcite{liu2021graph}{{7}{2021}{{Liu et~al.}}{{Liu, Wang, Liu, Lin, Zhang, Oztekin and Ji}}}
+\bibcite{ma2022multi}{{8}{2022}{{Ma et~al.}}{{Ma, Wang, Aggarwal and Tang}}}
+\bibcite{rong2020self}{{9}{2020}{{Rong et~al.}}{{Rong, Bian, Xu, Xie, Wei, Huang and Huang}}}
+\bibcite{schutt2017schnet}{{10}{2017}{{Sch{\"u}tt et~al.}}{{Sch{\"u}tt, Kindermans, Sauceda, Chmiela, Tkatchenko and M{\"u}ller}}}
+\bibcite{velickovic2018graph}{{11}{2018}{{Veli\v {c}kovi\'{c} et~al.}}{{Veli\v {c}kovi\'{c}, Cucurull, Casanova, Romero, Li\`{o} and Bengio}}}
+\bibcite{weininger1988smiles}{{12}{1988}{{Weininger}}{{}}}
+\bibcite{wu2021comprehensive}{{13}{2021}{{Wu et~al.}}{{Wu, Pan, Chen, Long, Zhang and Yu}}}
+\bibcite{wu2018moleculenet}{{14}{2018}{{Wu et~al.}}{{Wu, Ramsundar, Feinberg, Gomes, Geniesse, Pappu, Leswing and Pande}}}
+\bibcite{xu2018powerful}{{15}{2019}{{Xu et~al.}}{{Xu, Hu, Leskovec and Jegelka}}}
+\bibcite{yang2019analyzing}{{16}{2019}{{Yang et~al.}}{{Yang, Swanson, Jin, Coley, Eiden, Gao, Guzman-Perez, Hopper, Kelley, Mathea et~al.}}}
+\bibcite{ying2021transformer}{{17}{2021}{{Ying et~al.}}{{Ying, Cai, Luo, Zheng, Ke, He, Shen and Liu}}}
+\bibcite{zhang2020graph}{{18}{2020}{{Zhang et~al.}}{{Zhang, Chen, Li, Pan, Chen, Li and Chen}}}
+\csxdef{lastpage}{11}
+\gdef \@abspage@last{12}

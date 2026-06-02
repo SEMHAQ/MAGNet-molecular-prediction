@@ -1,0 +1,180 @@
+\begin{thebibliography}{18}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\href}[2]{#2}
+\providecommand{\path}[1]{#1}
+\providecommand{\DOIprefix}{doi:}
+\providecommand{\ArXivprefix}{arXiv:}
+\providecommand{\URLprefix}{URL: }
+\providecommand{\Pubmedprefix}{pmid:}
+\providecommand{\doi}[1]{\href{http://dx.doi.org/#1}{\path{#1}}}
+\providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
+\providecommand{\bibinfo}[2]{#2}
+\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+%Type = Article
+\bibitem[{Chen et~al.(2022)Chen, Wei, Li and Chen}]{chen2022multi}
+\bibinfo{author}{Chen, J.}, \bibinfo{author}{Wei, Z.}, \bibinfo{author}{Li,
+  H.}, \bibinfo{author}{Chen, E.}, \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{Multi-scale graph neural networks for molecular
+  property prediction}.
+\newblock \bibinfo{journal}{Briefings in Bioinformatics} \bibinfo{volume}{23},
+  \bibinfo{pages}{bbac467}.
+%Type = Inproceedings
+\bibitem[{Duvenaud et~al.(2015)Duvenaud, Maclaurin, Iparraguirre, Bombarell,
+  Hirzel, Aspuru-Guzik and Adams}]{duvenaud2015convolutional}
+\bibinfo{author}{Duvenaud, D.K.}, \bibinfo{author}{Maclaurin, D.},
+  \bibinfo{author}{Iparraguirre, J.}, \bibinfo{author}{Bombarell, R.},
+  \bibinfo{author}{Hirzel, T.}, \bibinfo{author}{Aspuru-Guzik, A.},
+  \bibinfo{author}{Adams, R.P.}, \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{Convolutional networks on graphs for learning
+  molecular fingerprints}, in: \bibinfo{booktitle}{Advances in Neural
+  Information Processing Systems (NeurIPS)}.
+%Type = Inproceedings
+\bibitem[{Gilmer et~al.(2017)Gilmer, Schoenholz, Riley, Vinyals and
+  Dahl}]{gilmer2017neural}
+\bibinfo{author}{Gilmer, J.}, \bibinfo{author}{Schoenholz, S.S.},
+  \bibinfo{author}{Riley, P.F.}, \bibinfo{author}{Vinyals, O.},
+  \bibinfo{author}{Dahl, G.E.}, \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{Neural message passing for quantum chemistry}, in:
+  \bibinfo{booktitle}{International Conference on Machine Learning (ICML)}, pp.
+  \bibinfo{pages}{1263--1272}.
+%Type = Inproceedings
+\bibitem[{Hamilton et~al.(2017)Hamilton, Ying and
+  Leskovec}]{hamilton2017inductive}
+\bibinfo{author}{Hamilton, W.L.}, \bibinfo{author}{Ying, R.},
+  \bibinfo{author}{Leskovec, J.}, \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{Inductive representation learning on large graphs},
+  in: \bibinfo{booktitle}{Advances in Neural Information Processing Systems
+  (NeurIPS)}.
+%Type = Inproceedings
+\bibitem[{Kingma and Ba(2015)}]{kingma2015adam}
+\bibinfo{author}{Kingma, D.P.}, \bibinfo{author}{Ba, J.}, \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{Adam: A method for stochastic optimization}, in:
+  \bibinfo{booktitle}{International Conference on Learning Representations
+  (ICLR)}.
+%Type = Inproceedings
+\bibitem[{Kipf and Welling(2017)}]{kipf2017semi}
+\bibinfo{author}{Kipf, T.N.}, \bibinfo{author}{Welling, M.},
+  \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{Semi-supervised classification with graph
+  convolutional networks}, in: \bibinfo{booktitle}{International Conference on
+  Learning Representations (ICLR)}.
+%Type = Inproceedings
+\bibitem[{Liu et~al.(2021)Liu, Wang, Liu, Lin, Zhang, Oztekin and
+  Ji}]{liu2021graph}
+\bibinfo{author}{Liu, Y.}, \bibinfo{author}{Wang, L.}, \bibinfo{author}{Liu,
+  M.}, \bibinfo{author}{Lin, Y.}, \bibinfo{author}{Zhang, X.},
+  \bibinfo{author}{Oztekin, B.}, \bibinfo{author}{Ji, S.},
+  \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{Graph transformers for molecule generation}, in:
+  \bibinfo{booktitle}{Advances in Neural Information Processing Systems
+  (NeurIPS)}.
+%Type = Article
+\bibitem[{Ma et~al.(2022)Ma, Wang, Aggarwal and Tang}]{ma2022multi}
+\bibinfo{author}{Ma, Y.}, \bibinfo{author}{Wang, S.},
+  \bibinfo{author}{Aggarwal, C.C.}, \bibinfo{author}{Tang, J.},
+  \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{Multi-scale feature fusion for graph neural
+  networks}.
+\newblock \bibinfo{journal}{IEEE Transactions on Knowledge and Data
+  Engineering} \bibinfo{volume}{34}, \bibinfo{pages}{3864--3877}.
+%Type = Inproceedings
+\bibitem[{Rong et~al.(2020)Rong, Bian, Xu, Xie, Wei, Huang and
+  Huang}]{rong2020self}
+\bibinfo{author}{Rong, Y.}, \bibinfo{author}{Bian, Y.}, \bibinfo{author}{Xu,
+  T.}, \bibinfo{author}{Xie, W.}, \bibinfo{author}{Wei, Y.},
+  \bibinfo{author}{Huang, W.}, \bibinfo{author}{Huang, J.},
+  \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{Self-supervised graph transformer on large-scale
+  molecular data}, in: \bibinfo{booktitle}{Advances in Neural Information
+  Processing Systems (NeurIPS)}, pp. \bibinfo{pages}{12559--12571}.
+%Type = Inproceedings
+\bibitem[{Sch{\"u}tt et~al.(2017)Sch{\"u}tt, Kindermans, Sauceda, Chmiela,
+  Tkatchenko and M{\"u}ller}]{schutt2017schnet}
+\bibinfo{author}{Sch{\"u}tt, K.T.}, \bibinfo{author}{Kindermans, P.J.},
+  \bibinfo{author}{Sauceda, H.E.}, \bibinfo{author}{Chmiela, S.},
+  \bibinfo{author}{Tkatchenko, A.}, \bibinfo{author}{M{\"u}ller, K.R.},
+  \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{Schnet: A continuous-filter convolutional neural
+  network for modeling quantum interactions}, in: \bibinfo{booktitle}{Advances
+  in Neural Information Processing Systems (NeurIPS)}.
+%Type = Inproceedings
+\bibitem[{Veli\v{c}kovi\'{c} et~al.(2018)Veli\v{c}kovi\'{c}, Cucurull,
+  Casanova, Romero, Li\`{o} and Bengio}]{velickovic2018graph}
+\bibinfo{author}{Veli\v{c}kovi\'{c}, P.}, \bibinfo{author}{Cucurull, G.},
+  \bibinfo{author}{Casanova, A.}, \bibinfo{author}{Romero, A.},
+  \bibinfo{author}{Li\`{o}, P.}, \bibinfo{author}{Bengio, Y.},
+  \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{Graph attention networks}, in:
+  \bibinfo{booktitle}{International Conference on Learning Representations
+  (ICLR)}.
+%Type = Article
+\bibitem[{Weininger(1988)}]{weininger1988smiles}
+\bibinfo{author}{Weininger, D.}, \bibinfo{year}{1988}.
+\newblock \bibinfo{title}{Smiles, a chemical language and information system.
+  1. introduction to methodology and encoding rules}.
+\newblock \bibinfo{journal}{Journal of Chemical Information and Computer
+  Sciences} \bibinfo{volume}{28}, \bibinfo{pages}{31--36}.
+%Type = Article
+\bibitem[{Wu et~al.(2021)Wu, Pan, Chen, Long, Zhang and
+  Yu}]{wu2021comprehensive}
+\bibinfo{author}{Wu, Z.}, \bibinfo{author}{Pan, S.}, \bibinfo{author}{Chen,
+  F.}, \bibinfo{author}{Long, G.}, \bibinfo{author}{Zhang, C.},
+  \bibinfo{author}{Yu, P.S.}, \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{A comprehensive survey on graph neural networks}.
+\newblock \bibinfo{journal}{IEEE Transactions on Neural Networks and Learning
+  Systems} \bibinfo{volume}{32}, \bibinfo{pages}{4--24}.
+%Type = Article
+\bibitem[{Wu et~al.(2018)Wu, Ramsundar, Feinberg, Gomes, Geniesse, Pappu,
+  Leswing and Pande}]{wu2018moleculenet}
+\bibinfo{author}{Wu, Z.}, \bibinfo{author}{Ramsundar, B.},
+  \bibinfo{author}{Feinberg, E.N.}, \bibinfo{author}{Gomes, J.},
+  \bibinfo{author}{Geniesse, C.}, \bibinfo{author}{Pappu, A.S.},
+  \bibinfo{author}{Leswing, K.}, \bibinfo{author}{Pande, V.},
+  \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{Moleculenet: A benchmark for molecular machine
+  learning}.
+\newblock \bibinfo{journal}{Chemical Science} \bibinfo{volume}{9},
+  \bibinfo{pages}{513--530}.
+%Type = Inproceedings
+\bibitem[{Xu et~al.(2019)Xu, Hu, Leskovec and Jegelka}]{xu2018powerful}
+\bibinfo{author}{Xu, K.}, \bibinfo{author}{Hu, W.}, \bibinfo{author}{Leskovec,
+  J.}, \bibinfo{author}{Jegelka, S.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{How powerful are graph neural networks?}, in:
+  \bibinfo{booktitle}{International Conference on Learning Representations
+  (ICLR)}.
+%Type = Article
+\bibitem[{Yang et~al.(2019)Yang, Swanson, Jin, Coley, Eiden, Gao, Guzman-Perez,
+  Hopper, Kelley, Mathea et~al.}]{yang2019analyzing}
+\bibinfo{author}{Yang, K.}, \bibinfo{author}{Swanson, K.},
+  \bibinfo{author}{Jin, W.}, \bibinfo{author}{Coley, C.},
+  \bibinfo{author}{Eiden, P.}, \bibinfo{author}{Gao, H.},
+  \bibinfo{author}{Guzman-Perez, A.}, \bibinfo{author}{Hopper, T.},
+  \bibinfo{author}{Kelley, B.}, \bibinfo{author}{Mathea, M.}, et~al.,
+  \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Analyzing learned molecular representations for
+  property prediction}.
+\newblock \bibinfo{journal}{Journal of Chemical Information and Modeling}
+  \bibinfo{volume}{59}, \bibinfo{pages}{3370--3388}.
+%Type = Inproceedings
+\bibitem[{Ying et~al.(2021)Ying, Cai, Luo, Zheng, Ke, He, Shen and
+  Liu}]{ying2021transformer}
+\bibinfo{author}{Ying, C.}, \bibinfo{author}{Cai, T.}, \bibinfo{author}{Luo,
+  S.}, \bibinfo{author}{Zheng, S.}, \bibinfo{author}{Ke, G.},
+  \bibinfo{author}{He, D.}, \bibinfo{author}{Shen, Y.}, \bibinfo{author}{Liu,
+  T.Y.}, \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{Do transformers really perform bad for graph
+  representation?}, in: \bibinfo{booktitle}{Advances in Neural Information
+  Processing Systems (NeurIPS)}.
+%Type = Article
+\bibitem[{Zhang et~al.(2020)Zhang, Chen, Li, Pan, Chen, Li and
+  Chen}]{zhang2020graph}
+\bibinfo{author}{Zhang, J.}, \bibinfo{author}{Chen, C.}, \bibinfo{author}{Li,
+  L.}, \bibinfo{author}{Pan, L.}, \bibinfo{author}{Chen, Y.},
+  \bibinfo{author}{Li, C.}, \bibinfo{author}{Chen, T.}, \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{Graph neural networks: A review of methods and
+  applications}.
+\newblock \bibinfo{journal}{AI Open} \bibinfo{volume}{1},
+  \bibinfo{pages}{57--81}.
+
+\end{thebibliography}
