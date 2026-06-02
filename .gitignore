@@ -128,12 +128,15 @@ htmlcov/
 # ======================
 # Keep these directories
 # ======================
-!docs/
-!docs/**
 !paper/
 !paper/**
 !code/
 !code/**
+
+# Re-ignore build artifacts under code/
+code/**/__pycache__/
+code/**/*.pyc
+code/**/*.pyo
 
 # Claude Code
 .claude/
