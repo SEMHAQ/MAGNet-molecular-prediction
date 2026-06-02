@@ -11,7 +11,7 @@ import matplotlib
 matplotlib.use("Agg")  # Non-interactive backend for server environments
 import matplotlib.pyplot as plt
 import seaborn as sns
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 from pathlib import Path
 
 # Publication style defaults
@@ -337,6 +337,129 @@ def plot_metric_comparison(
     ax.legend(loc="lower right")
     ax.set_ylim([0, 1.15])
     ax.grid(True, alpha=0.3, axis="y")
+
+    plt.tight_layout()
+
+    if save_path:
+        os.makedirs(os.path.dirname(save_path) or ".", exist_ok=True)
+        fig.savefig(save_path)
+        plt.close(fig)
+
+    return fig
+
+
+def plot_comparison_bar(
+    results: Dict[str, float],
+    metric_name: str = "Accuracy",
+    save_path: Optional[str] = None,
+    title: str = "Model Comparison",
+    color: str = "#2E86AB",
+) -> plt.Figure:
+    """
+    Plot simple bar chart comparing models on a single metric.
+
+    Args:
+        results: Dict of model_name -> metric_value.
+        metric_name: Name of the metric for y-axis label.
+        save_path: Path to save figure.
+        title: Figure title.
+        color: Bar color.
+
+    Returns:
+        matplotlib Figure object.
+    """
+    model_names = list(results.keys())
+    values = list(results.values())
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    bars = ax.bar(model_names, values, color=color, alpha=0.85, edgecolor='white')
+
+    # Add value labels
+    for bar, val in zip(bars, values):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.01,
+            f"{val:.4f}",
+            ha="center",
+            va="bottom",
+            fontsize=11,
+            fontweight="bold",
+        )
+
+    ax.set_ylabel(metric_name)
+    ax.set_title(title)
+    ax.set_ylim([0, 1.0])
+    ax.grid(True, alpha=0.3, axis="y")
+
+    plt.tight_layout()
+
+    if save_path:
+        os.makedirs(os.path.dirname(save_path) or ".", exist_ok=True)
+        fig.savefig(save_path)
+        plt.close(fig)
+
+    return fig
+
+
+def plot_ablation_study(
+    ablation_results: Dict[str, Dict[str, Any]],
+    x_key: str = "num_scales",
+    metric_key: str = "accuracy",
+    save_path: Optional[str] = None,
+    title: str = "Ablation Study",
+    xlabel: str = "Number of Scales",
+    color: str = "#A23B72",
+) -> plt.Figure:
+    """
+    Plot ablation study results as a line chart.
+
+    Args:
+        ablation_results: Dict of experiment_name -> {x_key: value, metric_key: value}.
+        x_key: Key for x-axis values.
+        metric_key: Key for metric values in test_metrics.
+        save_path: Path to save figure.
+        title: Figure title.
+        xlabel: X-axis label.
+        color: Line color.
+
+    Returns:
+        matplotlib Figure object.
+    """
+    x_values = []
+    y_values = []
+
+    for exp_name, exp_data in ablation_results.items():
+        if x_key in exp_data:
+            x_values.append(exp_data[x_key])
+            if 'test_metrics' in exp_data:
+                y_values.append(exp_data['test_metrics'].get(metric_key, 0.0))
+            else:
+                y_values.append(exp_data.get(metric_key, 0.0))
+
+    # Sort by x values
+    sorted_pairs = sorted(zip(x_values, y_values))
+    x_values = [p[0] for p in sorted_pairs]
+    y_values = [p[1] for p in sorted_pairs]
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(x_values, y_values, 'o-', linewidth=2, markersize=10, color=color)
+
+    # Add value labels
+    for x, y in zip(x_values, y_values):
+        ax.annotate(
+            f"{y:.4f}",
+            (x, y),
+            textcoords="offset points",
+            xytext=(0, 10),
+            ha="center",
+            fontsize=10,
+        )
+
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel("Test Accuracy")
+    ax.set_title(title)
+    ax.grid(True, alpha=0.3)
+    ax.set_xticks(x_values)
 
     plt.tight_layout()
 

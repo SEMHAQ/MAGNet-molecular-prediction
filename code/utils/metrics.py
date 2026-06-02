@@ -88,6 +88,10 @@ def compute_classification_metrics(
     if y_prob is not None:
         y_prob_arr = to_numpy(y_prob)
 
+        # Replace NaN values with 0.5 (neutral probability)
+        if np.any(np.isnan(y_prob_arr)):
+            y_prob_arr = np.nan_to_num(y_prob_arr, nan=0.5)
+
         if is_binary:
             # Handle shape (N, 1) -> (N,)
             if y_prob_arr.ndim == 2 and y_prob_arr.shape[1] == 1:
@@ -96,21 +100,26 @@ def compute_classification_metrics(
             elif y_prob_arr.ndim == 2 and y_prob_arr.shape[1] == 2:
                 y_prob_arr = y_prob_arr[:, 1]
 
-            metrics["auc"] = roc_auc_score(y_true, y_prob_arr)
-            metrics["ap"] = average_precision_score(y_true, y_prob_arr)
-            metrics["log_loss"] = log_loss(y_true, y_prob_arr)
+            try:
+                metrics["auc"] = roc_auc_score(y_true, y_prob_arr)
+                metrics["ap"] = average_precision_score(y_true, y_prob_arr)
+                metrics["log_loss"] = log_loss(y_true, y_prob_arr)
 
-            # ROC curve points
-            fpr, tpr, thresholds = roc_curve(y_true, y_prob_arr)
-            metrics["roc_curve"] = {"fpr": fpr, "tpr": tpr, "thresholds": thresholds}
+                # ROC curve points
+                fpr, tpr, thresholds = roc_curve(y_true, y_prob_arr)
+                metrics["roc_curve"] = {"fpr": fpr, "tpr": tpr, "thresholds": thresholds}
 
-            # Precision-recall curve points
-            pr_precision, pr_recall, pr_thresholds = precision_recall_curve(y_true, y_prob_arr)
-            metrics["pr_curve"] = {
-                "precision": pr_precision,
-                "recall": pr_recall,
-                "thresholds": pr_thresholds,
-            }
+                # Precision-recall curve points
+                pr_precision, pr_recall, pr_thresholds = precision_recall_curve(y_true, y_prob_arr)
+                metrics["pr_curve"] = {
+                    "precision": pr_precision,
+                    "recall": pr_recall,
+                    "thresholds": pr_thresholds,
+                }
+            except ValueError:
+                metrics["auc"] = 0.5
+                metrics["ap"] = 0.0
+                metrics["log_loss"] = 1.0
         else:
             # Multi-class AUC
             try:

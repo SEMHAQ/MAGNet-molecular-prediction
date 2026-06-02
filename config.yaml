@@ -1,8 +1,9 @@
-# Project Configuration
+# Project Configuration for CompBioChem
+# MAGNet: Multi-scale Attention Graph Network for Molecular Property Prediction
 
 # Experiment settings
 experiment:
-  name: "compbiochem_experiment"
+  name: "magnet_molecular_property_prediction"
   seed: 42
   device: "cuda"  # or "cpu"
 
@@ -10,22 +11,30 @@ experiment:
 data:
   root_dir: "./data"
   batch_size: 32
-  num_workers: 4
+  num_workers: 0  # Set to 0 for Windows compatibility
   train_ratio: 0.8
   val_ratio: 0.1
   test_ratio: 0.1
+  n_train: 2000
+  n_val: 400
+  n_test: 400
+  property_type: "toxicity"
+  difficulty: "medium"
 
 # Model settings
 model:
-  name: "baseline"
-  input_dim: 128
-  hidden_dim: 256
-  output_dim: 64
+  name: "magnet"
+  input_dim: 14  # 9 element features + 5 atom features
+  hidden_dim: 128
+  output_dim: 1
+  num_scales: 3
+  num_heads: 4
+  num_queries: 4
   dropout: 0.1
 
 # Training settings
 training:
-  epochs: 100
+  epochs: 50
   learning_rate: 0.001
   weight_decay: 0.0001
   scheduler: "cosine"
