@@ -70,6 +70,7 @@ class MolecularTrainer:
     Trainer for molecular property prediction models.
 
     Handles training, validation, and evaluation with proper logging.
+    Uses AUROC for early stopping and class-weighted loss.
     """
 
     def __init__(
@@ -79,6 +80,7 @@ class MolecularTrainer:
         learning_rate: float = 0.001,
         weight_decay: float = 1e-4,
         patience: int = 10,
+        pos_weight: float = 1.0,
     ):
         self.model = model.to(device)
         self.device = device
@@ -87,7 +89,9 @@ class MolecularTrainer:
             lr=learning_rate,
             weight_decay=weight_decay,
         )
-        self.criterion = nn.BCEWithLogitsLoss()
+        self.criterion = nn.BCEWithLogitsLoss(
+            pos_weight=torch.tensor([pos_weight], device=device)
+        )
         self.best_val_metric = 0.0
         self.best_model_state = None
         self.patience = patience
@@ -154,18 +158,42 @@ class MolecularTrainer:
 
         return metrics
 
+    def validate(self, val_loader) -> float:
+        """Quick validation returning AUROC for early stopping."""
+        from sklearn.metrics import roc_auc_score
+        self.model.eval()
+        all_labels = []
+        all_probs = []
+
+        with torch.no_grad():
+            for batch in val_loader:
+                node_features, adj, labels = batch
+                node_features = node_features.to(self.device)
+                adj = adj.to(self.device)
+                outputs = self.model(node_features, adj)
+                probs = torch.sigmoid(outputs)
+                all_labels.extend(labels.numpy())
+                all_probs.extend(probs.cpu().numpy())
+
+        all_labels = np.array(all_labels)
+        all_probs = np.array(all_probs)
+
+        try:
+            return roc_auc_score(all_labels, all_probs)
+        except ValueError:
+            return 0.5
+
     def train(
         self,
         train_loader,
         val_loader,
         epochs: int = 100,
     ) -> Dict[str, List[float]]:
-        """Full training loop with early stopping."""
+        """Full training loop with early stopping based on AUROC."""
         history = {
             'train_loss': [],
             'train_acc': [],
-            'val_loss': [],
-            'val_acc': [],
+            'val_auroc': [],
         }
 
         for epoch in range(epochs):
@@ -174,16 +202,14 @@ class MolecularTrainer:
             history['train_loss'].append(train_metrics['loss'])
             history['train_acc'].append(train_metrics['accuracy'])
 
-            # Validate
-            val_metrics = self.evaluate(val_loader)
-            history['val_loss'].append(val_metrics.get('loss', 0.0))
-            history['val_acc'].append(val_metrics['accuracy'])
+            # Validate with AUROC
+            val_auroc = self.validate(val_loader)
+            history['val_auroc'].append(val_auroc)
 
-            # Early stopping
-            val_metric = val_metrics['accuracy']
-            if val_metric > self.best_val_metric:
-                self.best_val_metric = val_metric
-                self.best_model_state = self.model.state_dict().copy()
+            # Early stopping based on AUROC
+            if val_auroc > self.best_val_metric:
+                self.best_val_metric = val_auroc
+                self.best_model_state = {k: v.cpu().clone() for k, v in self.model.state_dict().items()}
                 self.patience_counter = 0
             else:
                 self.patience_counter += 1
@@ -197,12 +223,13 @@ class MolecularTrainer:
                     f"Epoch {epoch + 1}/{epochs} - "
                     f"Train Loss: {train_metrics['loss']:.4f}, "
                     f"Train Acc: {train_metrics['accuracy']:.4f}, "
-                    f"Val Acc: {val_metrics['accuracy']:.4f}"
+                    f"Val AUROC: {val_auroc:.4f}"
                 )
 
         # Load best model
         if self.best_model_state is not None:
             self.model.load_state_dict(self.best_model_state)
+            self.model.to(self.device)
 
         return history
 
@@ -267,6 +294,13 @@ def run_single_experiment(
     sample = train_dataset[0]
     in_dim = sample[0].shape[1]  # node feature dimension
 
+    # Compute pos_weight from training set
+    labels_np = np.array(train_dataset.labels)
+    n_pos = labels_np.sum()
+    n_neg = len(labels_np) - n_pos
+    pos_weight = n_neg / max(n_pos, 1)
+    logger.info(f"Class balance: {n_pos} positive, {n_neg} negative, pos_weight={pos_weight:.3f}")
+
     # Create model
     model = create_model(
         model_name=model_name,
@@ -285,13 +319,14 @@ def run_single_experiment(
         num_workers=config['data']['num_workers'],
     )
 
-    # Create trainer
+    # Create trainer with class weighting
     trainer = MolecularTrainer(
         model=model,
         device=device,
         learning_rate=config['training']['learning_rate'],
         weight_decay=config['training']['weight_decay'],
         patience=config['training']['early_stopping'],
+        pos_weight=pos_weight,
     )
 
     # Train
@@ -315,7 +350,7 @@ def run_single_experiment(
         'history': history,
         'test_metrics': test_metrics,
         'train_time': train_time,
-        'best_val_acc': trainer.best_val_metric,
+        'best_val_auroc': trainer.best_val_metric,
     }
 
 
@@ -331,13 +366,17 @@ def run_ablation_study(
     logger.info("Running Ablation Study")
     logger.info("="*60)
 
+    # Compute pos_weight
+    labels_np = np.array(train_dataset.labels)
+    n_pos = labels_np.sum()
+    n_neg = len(labels_np) - n_pos
+    pos_weight = n_neg / max(n_pos, 1)
+
     results = {}
 
     # Ablation 1: Number of scales
     for num_scales in [1, 2, 3, 4]:
         logger.info(f"\nAblation: num_scales={num_scales}")
-        config_copy = config.copy()
-        config_copy['model'] = config['model'].copy()
 
         model = MAGNet(
             in_dim=train_dataset[0][0].shape[1],
@@ -361,6 +400,7 @@ def run_ablation_study(
             learning_rate=config['training']['learning_rate'],
             weight_decay=config['training']['weight_decay'],
             patience=config['training']['early_stopping'],
+            pos_weight=pos_weight,
         )
 
         history = trainer.train(train_loader, val_loader, epochs=config['training']['epochs'])
@@ -369,7 +409,7 @@ def run_ablation_study(
         results[f'scales_{num_scales}'] = {
             'num_scales': num_scales,
             'test_metrics': test_metrics,
-            'best_val_acc': trainer.best_val_metric,
+            'best_val_auroc': trainer.best_val_metric,
         }
 
     # Ablation 2: Number of attention heads
@@ -397,6 +437,7 @@ def run_ablation_study(
             learning_rate=config['training']['learning_rate'],
             weight_decay=config['training']['weight_decay'],
             patience=config['training']['early_stopping'],
+            pos_weight=pos_weight,
         )
 
         history = trainer.train(train_loader, val_loader, epochs=config['training']['epochs'])
@@ -405,7 +446,7 @@ def run_ablation_study(
         results[f'heads_{num_heads}'] = {
             'num_heads': num_heads,
             'test_metrics': test_metrics,
-            'best_val_acc': trainer.best_val_metric,
+            'best_val_auroc': trainer.best_val_metric,
         }
 
     return results
@@ -419,79 +460,115 @@ def generate_figures(
     """Generate publication-quality figures."""
     os.makedirs(output_dir, exist_ok=True)
 
-    # Figure 1: Training curves comparison
+    # Publication style
+    plt.rcParams.update({
+        'font.size': 12,
+        'axes.labelsize': 13,
+        'axes.titlesize': 14,
+        'xtick.labelsize': 11,
+        'ytick.labelsize': 11,
+        'legend.fontsize': 11,
+    })
+    colors = {'magnet': '#E63946', 'gcn': '#457B9D', 'gat': '#2A9D8F', 'mlp': '#264653'}
+
+    # Figure 1: Training curves comparison (loss + AUROC)
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     for result in baseline_results:
-        axes[0].plot(result['history']['train_loss'], label=result['model_name'])
-        axes[1].plot(result['history']['val_acc'], label=result['model_name'])
+        name = result['model_name']
+        c = colors.get(name, '#333333')
+        axes[0].plot(result['history']['train_loss'], label=name.upper(), color=c, linewidth=2)
+        axes[1].plot(result['history']['val_auroc'], label=name.upper(), color=c, linewidth=2)
     axes[0].set_xlabel('Epoch')
     axes[0].set_ylabel('Training Loss')
-    axes[0].set_title('Training Loss Curves')
+    axes[0].set_title('(a) Training Loss')
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
     axes[1].set_xlabel('Epoch')
-    axes[1].set_ylabel('Validation Accuracy')
-    axes[1].set_title('Validation Accuracy Curves')
+    axes[1].set_ylabel('Validation AUROC')
+    axes[1].set_title('(b) Validation AUROC')
     axes[1].legend()
     axes[1].grid(True, alpha=0.3)
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'training_curves.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir, 'training_curves.pdf'), bbox_inches='tight')
     plt.close()
 
-    # Figure 2: Model comparison bar chart
+    # Figure 2: Model comparison bar chart (multi-metric)
+    metrics_to_plot = ['accuracy', 'auc', 'f1', 'mcc']
+    metric_labels = ['Accuracy', 'AUROC', 'F1', 'MCC']
     model_names = [r['model_name'] for r in baseline_results]
-    accuracies = [r['test_metrics']['accuracy'] for r in baseline_results]
-    aurocs = [r['test_metrics'].get('auc', 0.0) for r in baseline_results]
+    n_models = len(model_names)
+    n_metrics = len(metrics_to_plot)
 
-    fig, ax = plt.subplots(figsize=(8, 6))
-    x = np.arange(len(model_names))
-    width = 0.35
-    bars1 = ax.bar(x - width/2, accuracies, width, label='Accuracy', color='#2E86AB')
-    bars2 = ax.bar(x + width/2, aurocs, width, label='AUROC', color='#A23B72')
-    ax.set_xlabel('Model')
+    fig, ax = plt.subplots(figsize=(10, 6))
+    x = np.arange(n_metrics)
+    width = 0.8 / n_models
+
+    for i, result in enumerate(baseline_results):
+        name = result['model_name']
+        c = colors.get(name, '#333333')
+        values = [result['test_metrics'].get(m, 0.0) for m in metrics_to_plot]
+        offset = (i - n_models / 2 + 0.5) * width
+        bars = ax.bar(x + offset, values, width, label=name.upper(), color=c, alpha=0.9)
+        for bar, val in zip(bars, values):
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
+                    f'{val:.3f}', ha='center', va='bottom', fontsize=9)
+
     ax.set_ylabel('Score')
     ax.set_title('Model Performance Comparison')
     ax.set_xticks(x)
-    ax.set_xticklabels([n.upper() for n in model_names])
-    ax.legend()
-    ax.set_ylim(0, 1.0)
+    ax.set_xticklabels(metric_labels)
+    ax.legend(loc='lower right')
+    ax.set_ylim(0, 1.15)
     ax.grid(True, alpha=0.3, axis='y')
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'model_comparison.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir, 'model_comparison.pdf'), bbox_inches='tight')
     plt.close()
 
-    # Figure 3: Ablation study
+    # Figure 3: Ablation -- scales
     if ablation_results:
-        # Scales ablation
         scales_results = {k: v for k, v in ablation_results.items() if k.startswith('scales_')}
         if scales_results:
-            fig, ax = plt.subplots(figsize=(8, 6))
+            fig, ax = plt.subplots(figsize=(7, 5))
             scales = [v['num_scales'] for v in scales_results.values()]
+            aurocs = [v['test_metrics'].get('auc', 0.0) for v in scales_results.values()]
             accs = [v['test_metrics']['accuracy'] for v in scales_results.values()]
-            ax.plot(scales, accs, 'o-', linewidth=2, markersize=8, color='#2E86AB')
+            ax.plot(scales, aurocs, 'o-', linewidth=2, markersize=8, color='#E63946', label='AUROC')
+            ax.plot(scales, accs, 's--', linewidth=2, markersize=8, color='#457B9D', label='Accuracy')
+            for s, a in zip(scales, aurocs):
+                ax.annotate(f'{a:.3f}', (s, a), textcoords='offset points', xytext=(0, 10), ha='center', fontsize=10)
             ax.set_xlabel('Number of Scales')
-            ax.set_ylabel('Test Accuracy')
+            ax.set_ylabel('Score')
             ax.set_title('Ablation: Effect of Multi-scale Feature Extraction')
+            ax.legend()
             ax.grid(True, alpha=0.3)
             ax.set_xticks(scales)
             plt.tight_layout()
             plt.savefig(os.path.join(output_dir, 'ablation_scales.png'), dpi=300, bbox_inches='tight')
+            plt.savefig(os.path.join(output_dir, 'ablation_scales.pdf'), bbox_inches='tight')
             plt.close()
 
-        # Heads ablation
+        # Figure 4: Ablation -- heads
         heads_results = {k: v for k, v in ablation_results.items() if k.startswith('heads_')}
         if heads_results:
-            fig, ax = plt.subplots(figsize=(8, 6))
+            fig, ax = plt.subplots(figsize=(7, 5))
             heads = [v['num_heads'] for v in heads_results.values()]
+            aurocs = [v['test_metrics'].get('auc', 0.0) for v in heads_results.values()]
             accs = [v['test_metrics']['accuracy'] for v in heads_results.values()]
-            ax.plot(heads, accs, 'o-', linewidth=2, markersize=8, color='#A23B72')
+            ax.plot(heads, aurocs, 'o-', linewidth=2, markersize=8, color='#E63946', label='AUROC')
+            ax.plot(heads, accs, 's--', linewidth=2, markersize=8, color='#457B9D', label='Accuracy')
+            for h, a in zip(heads, aurocs):
+                ax.annotate(f'{a:.3f}', (h, a), textcoords='offset points', xytext=(0, 10), ha='center', fontsize=10)
             ax.set_xlabel('Number of Attention Heads')
-            ax.set_ylabel('Test Accuracy')
+            ax.set_ylabel('Score')
             ax.set_title('Ablation: Effect of Attention Heads')
+            ax.legend()
             ax.grid(True, alpha=0.3)
             ax.set_xticks(heads)
             plt.tight_layout()
             plt.savefig(os.path.join(output_dir, 'ablation_heads.png'), dpi=300, bbox_inches='tight')
+            plt.savefig(os.path.join(output_dir, 'ablation_heads.pdf'), bbox_inches='tight')
             plt.close()
 
 
@@ -532,7 +609,7 @@ def main():
     logger.info(f"Dataset stats: {train_dataset.get_statistics()}")
 
     # Run experiments with different models
-    models_to_test = ['magnet', 'gcn', 'gat']
+    models_to_test = ['magnet', 'gcn', 'gat', 'mlp']
     baseline_results = []
 
     for model_name in models_to_test:
@@ -585,7 +662,7 @@ def main():
                 'test_metrics': {k: v for k, v in r['test_metrics'].items()
                                if k not in ('confusion_matrix', 'roc_curve', 'pr_curve')},
                 'train_time': float(r['train_time']),
-                'best_val_acc': float(r['best_val_acc']),
+                'best_val_auroc': float(r['best_val_auroc']),
             }
             for r in baseline_results
         ],
@@ -595,7 +672,7 @@ def main():
                 'num_heads': v.get('num_heads'),
                 'test_metrics': {k2: v2 for k2, v2 in v['test_metrics'].items()
                                if k2 not in ('confusion_matrix', 'roc_curve', 'pr_curve')},
-                'best_val_acc': float(v['best_val_acc']),
+                'best_val_auroc': float(v['best_val_auroc']),
             }
             for k, v in ablation_results.items()
         },

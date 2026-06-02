@@ -73,15 +73,17 @@ class SyntheticMolecularDataset(Dataset):
         # Property-specific parameters
         prop_params = self._get_property_params(property_type, difficulty)
 
+        # Generate balanced dataset: assign labels first, then generate molecules
+        # that match the label to create a learnable signal
         for i in range(n_molecules):
             # Random molecule size
-            n_atoms = rng.randint(5, 51)
+            n_atoms = rng.randint(8, 45)
 
-            # Generate molecular structure
-            node_features, adj = self._generate_molecule(n_atoms, rng, prop_params)
+            # Pre-assign label for balance
+            label = i % 2  # exactly 50/50 split
 
-            # Generate label based on structural features
-            label = self._compute_label(node_features, adj, prop_params, rng)
+            # Generate molecular structure consistent with label
+            node_features, adj = self._generate_molecule(n_atoms, rng, prop_params, label)
 
             self.node_features_list.append(node_features)
             self.adjacency_list.append(adj)
@@ -97,16 +99,16 @@ class SyntheticMolecularDataset(Dataset):
             'toxicity': {
                 'toxic_elements': ['Cl', 'Br', 'I'],
                 'toxic_motifs': ['aromatic'],
-                'noise_level': 0.1 if difficulty == 'easy' else 0.2 if difficulty == 'medium' else 0.3,
+                'noise_level': 0.05 if difficulty == 'easy' else 0.10 if difficulty == 'medium' else 0.20,
             },
             'solubility': {
                 'hydrophilic': ['N', 'O'],
                 'hydrophobic': ['C', 'S'],
-                'noise_level': 0.1 if difficulty == 'easy' else 0.2 if difficulty == 'medium' else 0.3,
+                'noise_level': 0.05 if difficulty == 'easy' else 0.10 if difficulty == 'medium' else 0.20,
             },
             'binding': {
                 'binding_elements': ['N', 'O', 'S'],
-                'noise_level': 0.1 if difficulty == 'easy' else 0.2 if difficulty == 'medium' else 0.3,
+                'noise_level': 0.05 if difficulty == 'easy' else 0.10 if difficulty == 'medium' else 0.20,
             },
         }
         return params.get(property_type, params['toxicity'])
@@ -116,31 +118,51 @@ class SyntheticMolecularDataset(Dataset):
         n_atoms: int,
         rng: np.random.RandomState,
         prop_params: Dict,
+        label: int = 0,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """Generate a single molecular graph."""
+        """Generate a single molecular graph with structure correlated to label."""
         elements = list(self.ELEMENT_FEATURES.keys())
 
-        # Select elements (biased by property type)
+        # Element weights depend on property type AND label
+        # Positive label = molecule HAS the property (e.g., toxic)
         if self.property_type == 'toxicity':
-            weights = [0.6, 0.1, 0.1, 0.05, 0.05, 0.05, 0.03, 0.01, 0.01]
+            if label == 1:  # toxic: more halogens, more aromatic
+                weights = [0.40, 0.08, 0.08, 0.04, 0.08, 0.12, 0.10, 0.06, 0.04]
+            else:  # non-toxic: fewer halogens
+                weights = [0.70, 0.12, 0.10, 0.04, 0.02, 0.01, 0.005, 0.005, 0.00]
         elif self.property_type == 'solubility':
-            weights = [0.4, 0.2, 0.2, 0.05, 0.05, 0.05, 0.03, 0.01, 0.01]
+            if label == 1:  # soluble: more N, O (hydrophilic)
+                weights = [0.30, 0.25, 0.25, 0.05, 0.05, 0.03, 0.02, 0.01, 0.04]
+            else:  # insoluble: more C, S (hydrophobic)
+                weights = [0.65, 0.05, 0.05, 0.12, 0.03, 0.03, 0.02, 0.01, 0.04]
         else:  # binding
-            weights = [0.5, 0.15, 0.15, 0.1, 0.03, 0.03, 0.02, 0.01, 0.01]
+            if label == 1:  # strong binding: more heteroatoms
+                weights = [0.35, 0.20, 0.20, 0.12, 0.03, 0.03, 0.02, 0.01, 0.04]
+            else:  # weak binding: mostly carbon
+                weights = [0.70, 0.08, 0.08, 0.04, 0.03, 0.03, 0.02, 0.01, 0.01]
 
         selected_elements = rng.choice(elements, size=n_atoms, p=weights)
 
-        # Create node features
-        node_features = np.array([
-            self.ELEMENT_FEATURES[elem] + [
-                rng.randint(0, 4),  # Hybridization
-                rng.randint(0, 2),  # Aromatic
-                rng.randint(0, 5),  # Degree
-                rng.randint(0, 3),  # Formal charge
-                rng.randint(0, 4),  # Num H
-            ]
-            for elem in selected_elements
-        ], dtype=np.float32)
+        # Create node features with element-correlated properties
+        node_features = []
+        for elem in selected_elements:
+            ef = self.ELEMENT_FEATURES[elem]
+            # Aromatic: higher probability for C in toxic-positive, otherwise low
+            if label == 1 and self.property_type == 'toxicity' and elem == 'C':
+                aromatic = rng.choice([0, 1], p=[0.5, 0.5])
+            else:
+                aromatic = rng.choice([0, 1], p=[0.85, 0.15])
+            # Hybridization correlates with element
+            if elem in ['C', 'N', 'O']:
+                hybrid = rng.choice([0, 1, 2, 3], p=[0.1, 0.3, 0.4, 0.2])
+            else:
+                hybrid = rng.choice([0, 1, 2, 3], p=[0.4, 0.3, 0.2, 0.1])
+            degree = rng.randint(1, 5)
+            formal_charge = rng.choice([0, 0, 0, 1, -1])  # mostly 0
+            num_h = rng.randint(0, 4)
+            node_features.append(ef + [hybrid, aromatic, degree, formal_charge, num_h])
+
+        node_features = np.array(node_features, dtype=np.float32)
 
         # Generate adjacency matrix (tree-like + some rings)
         adj = np.zeros((n_atoms, n_atoms), dtype=np.float32)
@@ -148,16 +170,17 @@ class SyntheticMolecularDataset(Dataset):
         # Create a connected graph (tree backbone)
         for i in range(1, n_atoms):
             parent = rng.randint(0, i)
-            bond_type = rng.choice(['single', 'double', 'triple', 'aromatic'],
-                                   p=[0.7, 0.15, 0.05, 0.1])
-            bond_feat = self.BOND_TYPES[bond_type]
             adj[parent, i] = 1.0
             adj[i, parent] = 1.0
 
-        # Add some cycles (rings)
-        n_rings = rng.randint(0, min(3, max(1, n_atoms // 5)))
+        # Add some cycles (rings) -- more rings for positive toxicity
+        if self.property_type == 'toxicity' and label == 1:
+            n_rings = rng.randint(1, min(4, max(1, n_atoms // 4)))
+        else:
+            n_rings = rng.randint(0, min(2, max(1, n_atoms // 6)))
+
         for _ in range(n_rings):
-            if n_atoms >= 5:
+            if n_atoms >= 4:
                 start = rng.randint(0, n_atoms - 3)
                 max_ring = min(6, n_atoms - start)
                 if max_ring >= 3:
@@ -176,40 +199,45 @@ class SyntheticMolecularDataset(Dataset):
         prop_params: Dict,
         rng: np.random.RandomState,
     ) -> int:
-        """Compute property label based on molecular features."""
+        """
+        Compute property label based on molecular features.
+
+        Scores are normalized to [0, 1] range so different property types
+        produce balanced class distributions with a fixed threshold.
+        """
         n_atoms = node_features.shape[0]
 
         if self.property_type == 'toxicity':
             # Toxicity correlates with halogen content and aromaticity
             halogen_cols = [4, 5, 6, 7]  # F, Cl, Br, I
-            halogen_count = node_features[:, halogen_cols].sum()
-            aromatic_count = node_features[:, 9].sum()  # Aromatic feature
-            # Also use graph connectivity (density)
+            halogen_frac = node_features[:, halogen_cols].sum() / n_atoms
+            aromatic_frac = node_features[:, 10].sum() / n_atoms  # Aromatic (index 10)
             edge_density = adj.sum() / (n_atoms * n_atoms)
-            score = (halogen_count * 2 + aromatic_count + edge_density * 10) / (n_atoms + 1)
-            threshold = 0.35
+            # Weighted combination: halogens are strongest predictor
+            score = 0.5 * halogen_frac + 0.3 * aromatic_frac + 0.2 * min(edge_density * 5, 1.0)
+            threshold = 0.25
 
         elif self.property_type == 'solubility':
-            # Solubility correlates with N, O content
+            # Solubility correlates with N, O content (hydrophilic)
             hydrophilic_cols = [1, 2]  # N, O
-            hydrophilic_count = node_features[:, hydrophilic_cols].sum()
-            # Also consider molecular size (smaller = more soluble)
-            size_factor = 1.0 / (n_atoms + 1)
-            score = (hydrophilic_count + size_factor * 10) / (n_atoms + 1)
-            threshold = 0.25
+            hydrophilic_frac = node_features[:, hydrophilic_cols].sum() / n_atoms
+            # Smaller molecules tend to be more soluble
+            size_score = 1.0 - (n_atoms - 5) / 45.0  # normalized: 5->1.0, 50->0.0
+            score = 0.6 * hydrophilic_frac + 0.4 * size_score
+            threshold = 0.35
 
         else:  # binding
             # Binding correlates with heteroatom content and ring structures
             heteroatom_cols = [1, 2, 3]  # N, O, S
-            heteroatom_count = node_features[:, heteroatom_cols].sum()
-            # Ring count approximation
-            ring_indicator = node_features[:, 9].sum()  # Aromatic feature
-            score = (heteroatom_count + ring_indicator * 2) / (n_atoms + 1)
+            heteroatom_frac = node_features[:, heteroatom_cols].sum() / n_atoms
+            # Ring count approximation using aromatic feature
+            aromatic_frac = node_features[:, 10].sum() / n_atoms  # Aromatic (index 10)
+            score = 0.6 * heteroatom_frac + 0.4 * aromatic_frac
             threshold = 0.3
 
-        # Add noise (but keep it learnable)
+        # Add label noise (flips some labels to make the task harder)
         if rng.rand() < prop_params['noise_level']:
-            score = score + rng.normal(0, 0.1)
+            return 1 - int(score > threshold)
 
         return int(score > threshold)
 
