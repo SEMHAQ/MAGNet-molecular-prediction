@@ -134,3 +134,6 @@ htmlcov/
 !paper/**
 !code/
 !code/**
+
+# Claude Code
+.claude/
