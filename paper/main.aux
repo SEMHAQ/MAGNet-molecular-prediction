@@ -23,19 +23,19 @@
 \creditauthor{Conceptualization, Methodology, Software, Validation, Formal analysis, Investigation, Writing -- original draft, Visualization}{Huanjie Yu}
 \citation{wu2018moleculenet}
 \citation{yang2019analyzing}
-\citation{rogers2010extended}
-\citation{weininger1988smiles}
 \citation{wu2021comprehensive,zhang2020graph}
 \citation{gilmer2017neural}
 \citation{kipf2017semi}
 \citation{velickovic2018graph}
 \citation{xu2018powerful}
-\citation{hamilton2017inductive}
+\citation{yang2019analyzing}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
 \newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
-\citation{gilmer2017neural}
-\citation{yang2019analyzing}
-\citation{yang2019analyzing}
+\citation{hu2020strategies,rong2020self}
+\citation{chen2020simple,he2020momentum}
+\citation{gao2021simcse}
+\citation{wang2022molclr,you2020graph}
+\citation{oord2018representation}
 \citation{wu2018moleculenet}
 \citation{wu2021comprehensive}
 \citation{duvenaud2015convolutional}
@@ -44,130 +44,132 @@
 \citation{velickovic2018graph}
 \citation{xu2018powerful}
 \citation{hamilton2017inductive}
-\citation{li2016gated}
 \citation{yang2019analyzing}
-\citation{yang2019analyzing}
-\citation{li2016gated}
+\citation{liu2022pre}
+\citation{rong2020self}
+\citation{hu2020strategies}
+\citation{chen2020simple}
+\citation{he2020momentum}
+\citation{you2020graph}
+\citation{wang2022molclr}
 \citation{rogers2010extended}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{section.2}\protected@file@percent }
 \newlabel{sec:related}{{2}{3}{Related Work}{section.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Graph Neural Networks for Molecular Property Prediction}{3}{subsection.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Directed Message Passing}{3}{subsection.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Feature Engineering for Molecular Representations}{3}{subsection.2.3}\protected@file@percent }
-\citation{wu2018moleculenet}
-\citation{bemis1996properties}
-\citation{hu2020strategies}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Self-Supervised and Contrastive Learning for Molecules}{3}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Molecular Fingerprint Representations}{3}{subsection.2.3}\protected@file@percent }
 \citation{yang2019analyzing}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}MoleculeNet Benchmarks}{4}{subsection.2.4}\protected@file@percent }
+\citation{yang2019analyzing}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Overview of the DVCL framework. During pre-training, the graph encoder (DMPNN) and fingerprint encoder (MLP) produce embeddings that are aligned via an InfoNCE contrastive loss through separate projection heads. During fine-tuning, the embeddings are concatenated and passed through a task-specific classifier.}}{4}{figure.1}\protected@file@percent }
+\newlabel{fig:architecture}{{1}{4}{Overview of the DVCL framework. During pre-training, the graph encoder (DMPNN) and fingerprint encoder (MLP) produce embeddings that are aligned via an InfoNCE contrastive loss through separate projection heads. During fine-tuning, the embeddings are concatenated and passed through a task-specific classifier}{figure.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Methodology}{4}{section.3}\protected@file@percent }
 \newlabel{sec:method}{{3}{4}{Methodology}{section.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Problem Formulation}{4}{subsection.3.1}\protected@file@percent }
 \newlabel{sec:problem}{{3.1}{4}{Problem Formulation}{subsection.3.1}{}}
-\newlabel{eq:bce_loss}{{1}{4}{Problem Formulation}{equation.3.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Enriched Feature Representations}{4}{subsection.3.2}\protected@file@percent }
-\newlabel{sec:features}{{3.2}{4}{Enriched Feature Representations}{subsection.3.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Atom Features}{4}{subsubsection.3.2.1}\protected@file@percent }
-\citation{yang2019analyzing}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Atom feature set (36 dimensions). Each feature is either one-hot encoded or represented as a binary indicator.}}{5}{table.1}\protected@file@percent }
-\newlabel{tab:atom_features}{{1}{5}{Atom feature set (36 dimensions). Each feature is either one-hot encoded or represented as a binary indicator}{table.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Bond feature set (12 dimensions).}}{5}{table.2}\protected@file@percent }
-\newlabel{tab:bond_features}{{2}{5}{Bond feature set (12 dimensions)}{table.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Bond Features}{5}{subsubsection.3.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Directed Message Passing Neural Network}{5}{subsection.3.3}\protected@file@percent }
-\newlabel{sec:dmpnn}{{3.3}{5}{Directed Message Passing Neural Network}{subsection.3.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}Input Projection}{6}{subsubsection.3.3.1}\protected@file@percent }
-\newlabel{eq:input_proj}{{2}{6}{Input Projection}{equation.3.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}Message Function}{6}{subsubsection.3.3.2}\protected@file@percent }
-\newlabel{eq:message}{{3}{6}{Message Function}{equation.3.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.3}Aggregation}{6}{subsubsection.3.3.3}\protected@file@percent }
-\newlabel{eq:aggregation}{{4}{6}{Aggregation}{equation.3.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.4}Update Function}{6}{subsubsection.3.3.4}\protected@file@percent }
-\newlabel{eq:update}{{5}{6}{Update Function}{equation.3.5}{}}
-\newlabel{eq:layernorm}{{6}{6}{Update Function}{equation.3.6}{}}
-\citation{kingma2015adam}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}DVCL Architecture}{4}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:architecture}{{3.2}{4}{DVCL Architecture}{subsection.3.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Graph Encoder}{4}{subsubsection.3.2.1}\protected@file@percent }
+\newlabel{eq:input_proj}{{1}{4}{Graph Encoder}{equation.3.1}{}}
+\newlabel{eq:message}{{2}{4}{Graph Encoder}{equation.3.2}{}}
+\citation{chen2020simple}
+\citation{devlin2019bert}
+\newlabel{eq:update}{{3}{5}{Graph Encoder}{equation.3.3}{}}
+\newlabel{eq:layernorm}{{4}{5}{Graph Encoder}{equation.3.4}{}}
+\newlabel{eq:graph_pool}{{5}{5}{Graph Encoder}{equation.3.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Fingerprint Encoder}{5}{subsubsection.3.2.2}\protected@file@percent }
+\newlabel{eq:fp_encoder}{{6}{5}{Fingerprint Encoder}{equation.3.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.3}Projection Heads}{5}{subsubsection.3.2.3}\protected@file@percent }
+\newlabel{eq:proj}{{7}{5}{Projection Heads}{equation.3.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Chemistry-Aware Augmentations}{5}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:augmentation}{{3.3}{5}{Chemistry-Aware Augmentations}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}Atom Masking}{5}{subsubsection.3.3.1}\protected@file@percent }
+\citation{oord2018representation}
+\citation{you2020graph,wang2022molclr}
+\citation{you2020graph}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}Edge Dropping}{6}{subsubsection.3.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.3}Subgraph Extraction}{6}{subsubsection.3.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Dual-View Contrastive Pre-Training}{6}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:contrastive}{{3.4}{6}{Dual-View Contrastive Pre-Training}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}InfoNCE Loss}{6}{subsubsection.3.4.1}\protected@file@percent }
+\newlabel{eq:infonce}{{11}{6}{InfoNCE Loss}{equation.3.11}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}Pre-Training Procedure}{6}{subsubsection.3.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Fine-Tuning with Concatenated Embeddings}{6}{subsection.3.5}\protected@file@percent }
+\newlabel{sec:finetuning}{{3.5}{6}{Fine-Tuning with Concatenated Embeddings}{subsection.3.5}{}}
+\newlabel{eq:concat}{{12}{6}{Fine-Tuning with Concatenated Embeddings}{equation.3.12}{}}
+\newlabel{eq:classifier}{{13}{6}{Fine-Tuning with Concatenated Embeddings}{equation.3.13}{}}
+\newlabel{eq:bce_loss}{{14}{6}{Fine-Tuning with Concatenated Embeddings}{equation.3.14}{}}
 \citation{wu2018moleculenet}
-\citation{wu2018moleculenet,hu2020strategies,yang2019analyzing}
 \citation{bemis1996properties}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.5}Graph-Level Readout}{7}{subsubsection.3.3.5}\protected@file@percent }
-\newlabel{eq:pooling}{{7}{7}{Graph-Level Readout}{equation.3.7}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.6}Classifier Head}{7}{subsubsection.3.3.6}\protected@file@percent }
-\newlabel{eq:classifier}{{8}{7}{Classifier Head}{equation.3.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Training Procedure}{7}{subsection.3.4}\protected@file@percent }
-\newlabel{sec:training}{{3.4}{7}{Training Procedure}{subsection.3.4}{}}
+\citation{hu2020strategies}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces DVCL Dual-View Contrastive Pre-Training}}{7}{algorithm.1}\protected@file@percent }
+\newlabel{alg:pretrain}{{1}{7}{Pre-Training Procedure}{algorithm.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{7}{section.4}\protected@file@percent }
 \newlabel{sec:experiments}{{4}{7}{Experiments}{section.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Experimental Setup}{7}{subsection.4.1}\protected@file@percent }
 \newlabel{sec:setup}{{4.1}{7}{Experimental Setup}{subsection.4.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Datasets}{7}{subsubsection.4.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Data Splitting}{7}{subsubsection.4.1.2}\protected@file@percent }
+\citation{yang2019analyzing}
 \citation{kipf2017semi}
 \citation{velickovic2018graph}
 \citation{xu2018powerful}
 \citation{hamilton2017inductive}
-\citation{gilmer2017neural}
-\citation{yang2019analyzing}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Training DMPNN with Enriched Features}}{8}{algorithm.1}\protected@file@percent }
-\newlabel{alg:training}{{1}{8}{Training Procedure}{algorithm.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Data Splitting}{8}{subsubsection.4.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Baselines}{8}{subsubsection.4.1.3}\protected@file@percent }
-\citation{rogers2010extended}
-\citation{kingma2015adam}
 \citation{wu2018moleculenet}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Performance comparison on four MoleculeNet benchmarks with scaffold splitting. Results are reported as mean ROC-AUC $\pm $ standard deviation. Best GNN results are shown in \textbf  {bold}. The RF-Morgan result is reported separately as it is not a GNN method. For Tox21, RF-Morgan is not applicable (N/A) because standard Random Forest does not support multi-task learning with missing labels.}}{9}{table.3}\protected@file@percent }
-\newlabel{tab:main_results}{{3}{9}{Performance comparison on four MoleculeNet benchmarks with scaffold splitting. Results are reported as mean ROC-AUC $\pm $ standard deviation. Best GNN results are shown in \textbf {bold}. The RF-Morgan result is reported separately as it is not a GNN method. For Tox21, RF-Morgan is not applicable (N/A) because standard Random Forest does not support multi-task learning with missing labels}{table.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}Implementation Details}{9}{subsubsection.4.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.5}Evaluation Metrics}{9}{subsubsection.4.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Main Results}{9}{subsection.4.2}\protected@file@percent }
-\newlabel{sec:results}{{4.2}{9}{Main Results}{subsection.4.2}{}}
-\citation{yang2019analyzing}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Model complexity comparison. All GNN models use hidden dimension $h = 128$.}}{10}{table.4}\protected@file@percent }
-\newlabel{tab:efficiency}{{4}{10}{Model complexity comparison. All GNN models use hidden dimension $h = 128$}{table.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}DMPNN Achieves Best GNN Performance on Three Benchmarks}{10}{subsubsection.4.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Tox21: GAT Outperforms DMPNN}{10}{subsubsection.4.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Comparison with RF-Morgan Baseline}{10}{subsubsection.4.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Parameter Efficiency}{10}{subsection.4.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Ablation study on feature representation. All models use DMPNN architecture with 3 message passing steps, hidden dimension $h = 128$, and scaffold splitting on BBBP (5 seeds).}}{11}{table.5}\protected@file@percent }
-\newlabel{tab:ablation_features}{{5}{11}{Ablation study on feature representation. All models use DMPNN architecture with 3 message passing steps, hidden dimension $h = 128$, and scaffold splitting on BBBP (5 seeds)}{table.5}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Ablation study on message passing mechanism. All models use enriched features (36-dim atoms, 12-dim bonds) and $h = 128$ on BBBP (5 seeds).}}{11}{table.6}\protected@file@percent }
-\newlabel{tab:ablation_mp}{{6}{11}{Ablation study on message passing mechanism. All models use enriched features (36-dim atoms, 12-dim bonds) and $h = 128$ on BBBP (5 seeds)}{table.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Ablation Study}{11}{subsection.4.4}\protected@file@percent }
-\newlabel{sec:ablation}{{4.4}{11}{Ablation Study}{subsection.4.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}Effect of Enriched vs.\ Original Features}{11}{subsubsection.4.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}Effect of Message Passing Mechanism}{11}{subsubsection.4.4.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Cross-dataset comparison of original vs. enriched features for DMPNN.}}{12}{table.7}\protected@file@percent }
-\newlabel{tab:ablation_cross}{{7}{12}{Cross-dataset comparison of original vs. enriched features for DMPNN}{table.7}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}Cross-Dataset Ablation}{12}{subsubsection.4.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion}{12}{section.5}\protected@file@percent }
-\newlabel{sec:discussion}{{5}{12}{Discussion}{section.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Why Enriched Features Matter}{12}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Why Directed Message Passing Helps}{12}{subsection.5.2}\protected@file@percent }
-\citation{yang2019analyzing}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Variance and Reliability}{13}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Comparison with Random Forest}{13}{subsection.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Implications for Practice}{13}{subsection.5.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Limitations}{13}{subsection.5.6}\protected@file@percent }
-\citation{schutt2017schnet}
-\citation{hu2020strategies,rong2020self}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Baselines}{8}{subsubsection.4.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}Implementation Details}{8}{subsubsection.4.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.5}Evaluation Metrics}{8}{subsubsection.4.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Main Results}{8}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:results}{{4.2}{8}{Main Results}{subsection.4.2}{}}
+\citation{you2020graph}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Performance comparison on four MoleculeNet benchmarks with scaffold splitting. Results are reported as mean ROC-AUC $\pm $ standard deviation over 3 random seeds. Best results are shown in \textbf  {bold}. Results marked with XX.XX $\pm $ X.XXXX are pending completion.}}{9}{table.1}\protected@file@percent }
+\newlabel{tab:main_results}{{1}{9}{Performance comparison on four MoleculeNet benchmarks with scaffold splitting. Results are reported as mean ROC-AUC $\pm $ standard deviation over 3 random seeds. Best results are shown in \textbf {bold}. Results marked with XX.XX $\pm $ X.XXXX are pending completion}{table.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}DVCL Outperforms Standard GNN Baselines}{9}{subsubsection.4.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Effect of Pre-Training}{9}{subsubsection.4.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Comparison with DMPNN Baseline}{9}{subsubsection.4.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Ablation Study}{9}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:ablation}{{4.3}{9}{Ablation Study}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}Dual-View vs.\ Single-View Contrastive Learning}{9}{subsubsection.4.3.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Ablation: dual-view vs.\ single-view contrastive pre-training on BBBP (3 seeds, scaffold split).}}{10}{table.2}\protected@file@percent }
+\newlabel{tab:ablation_view}{{2}{10}{Ablation: dual-view vs.\ single-view contrastive pre-training on BBBP (3 seeds, scaffold split)}{table.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Ablation: effect of augmentation strategies on DVCL pre-training (BBBP, 3 seeds).}}{10}{table.3}\protected@file@percent }
+\newlabel{tab:ablation_aug}{{3}{10}{Ablation: effect of augmentation strategies on DVCL pre-training (BBBP, 3 seeds)}{table.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Ablation: effect of pre-training epochs on DVCL (BBBP, 3 seeds).}}{10}{table.4}\protected@file@percent }
+\newlabel{tab:ablation_epochs}{{4}{10}{Ablation: effect of pre-training epochs on DVCL (BBBP, 3 seeds)}{table.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}Effect of Augmentation Strategies}{10}{subsubsection.4.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.3}Pre-Training Epochs}{10}{subsubsection.4.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion}{10}{section.5}\protected@file@percent }
+\newlabel{sec:discussion}{{5}{10}{Discussion}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Why Dual-View Contrastive Learning Works}{10}{subsection.5.1}\protected@file@percent }
+\citation{you2020graph}
+\citation{wang2022molclr}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Comparison with Single-View Contrastive Methods}{11}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Practical Implications}{11}{subsection.5.3}\protected@file@percent }
 \bibstyle{cas-model2-names}
 \bibdata{references}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{14}{section.6}\protected@file@percent }
-\newlabel{sec:conclusion}{{6}{14}{Conclusion}{section.6}{}}
 \bibcite{bemis1996properties}{{1}{1996}{{Bemis and Murcko}}{{}}}
-\bibcite{duvenaud2015convolutional}{{2}{2015}{{Duvenaud et~al.}}{{Duvenaud, Maclaurin, Iparraguirre, Bombarell, Hirzel, Aspuru-Guzik and Adams}}}
-\bibcite{gilmer2017neural}{{3}{2017}{{Gilmer et~al.}}{{Gilmer, Schoenholz, Riley, Vinyals and Dahl}}}
-\bibcite{hamilton2017inductive}{{4}{2017}{{Hamilton et~al.}}{{Hamilton, Ying and Leskovec}}}
-\bibcite{hu2020strategies}{{5}{2020}{{Hu et~al.}}{{Hu, Liu, Gomes, Zitnik, Liang, Pande and Leskovec}}}
-\bibcite{kingma2015adam}{{6}{2015}{{Kingma and Ba}}{{}}}
-\bibcite{kipf2017semi}{{7}{2017}{{Kipf and Welling}}{{}}}
-\bibcite{li2016gated}{{8}{2016}{{Li et~al.}}{{Li, Zemel, Brockschmidt and Tarlow}}}
-\bibcite{rogers2010extended}{{9}{2010}{{Rogers and Hahn}}{{}}}
-\bibcite{rong2020self}{{10}{2020}{{Rong et~al.}}{{Rong, Bian, Xu, Xie, Wei, Huang and Huang}}}
-\bibcite{schutt2017schnet}{{11}{2017}{{Sch{\"u}tt et~al.}}{{Sch{\"u}tt, Kindermans, Sauceda, Chmiela, Tkatchenko and M{\"u}ller}}}
-\bibcite{velickovic2018graph}{{12}{2018}{{Veli\v {c}kovi\'{c} et~al.}}{{Veli\v {c}kovi\'{c}, Cucurull, Casanova, Romero, Li\`{o} and Bengio}}}
-\bibcite{weininger1988smiles}{{13}{1988}{{Weininger}}{{}}}
-\bibcite{wu2021comprehensive}{{14}{2021}{{Wu et~al.}}{{Wu, Pan, Chen, Long, Zhang and Yu}}}
-\bibcite{wu2018moleculenet}{{15}{2018}{{Wu et~al.}}{{Wu, Ramsundar, Feinberg, Gomes, Geniesse, Pappu, Leswing and Pande}}}
-\bibcite{xu2018powerful}{{16}{2019}{{Xu et~al.}}{{Xu, Hu, Leskovec and Jegelka}}}
-\bibcite{yang2019analyzing}{{17}{2019}{{Yang et~al.}}{{Yang, Swanson, Jin, Coley, Eiden, Gao, Guzman-Perez, Hopper, Kelley, Mathea et~al.}}}
-\bibcite{zhang2020graph}{{18}{2020}{{Zhang et~al.}}{{Zhang, Chen, Li, Pan, Chen, Li and Chen}}}
-\csxdef{lastpage}{15}
-\gdef \@abspage@last{16}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Limitations}{12}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{12}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{12}{Conclusion}{section.6}{}}
+\bibcite{chen2020simple}{{2}{2020}{{Chen et~al.}}{{Chen, Kornblith, Norber and Hinton}}}
+\bibcite{devlin2019bert}{{3}{2019}{{Devlin et~al.}}{{Devlin, Chang, Lee and Toutanova}}}
+\bibcite{duvenaud2015convolutional}{{4}{2015}{{Duvenaud et~al.}}{{Duvenaud, Maclaurin, Iparraguirre, Bombarell, Hirzel, Aspuru-Guzik and Adams}}}
+\bibcite{gao2021simcse}{{5}{2021}{{Gao et~al.}}{{Gao, Yao and Chen}}}
+\bibcite{gilmer2017neural}{{6}{2017}{{Gilmer et~al.}}{{Gilmer, Schoenholz, Riley, Vinyals and Dahl}}}
+\bibcite{hamilton2017inductive}{{7}{2017}{{Hamilton et~al.}}{{Hamilton, Ying and Leskovec}}}
+\bibcite{he2020momentum}{{8}{2020}{{He et~al.}}{{He, Fan, Wu, Xie and Girshick}}}
+\bibcite{hu2020strategies}{{9}{2020}{{Hu et~al.}}{{Hu, Liu, Gomes, Zitnik, Liang, Pande and Leskovec}}}
+\bibcite{kipf2017semi}{{10}{2017}{{Kipf and Welling}}{{}}}
+\bibcite{liu2022pre}{{11}{2022}{{Liu et~al.}}{{Liu, Guo and Tang}}}
+\bibcite{oord2018representation}{{12}{2018}{{Oord et~al.}}{{Oord, Li and Vinyals}}}
+\bibcite{rogers2010extended}{{13}{2010}{{Rogers and Hahn}}{{}}}
+\bibcite{rong2020self}{{14}{2020}{{Rong et~al.}}{{Rong, Bian, Xu, Xie, Wei, Huang and Huang}}}
+\bibcite{velickovic2018graph}{{15}{2018}{{Veli\v {c}kovi\'{c} et~al.}}{{Veli\v {c}kovi\'{c}, Cucurull, Casanova, Romero, Li\`{o} and Bengio}}}
+\bibcite{wang2022molclr}{{16}{2022}{{Wang et~al.}}{{Wang, Guo, Wang, Sun and Huang}}}
+\bibcite{wu2021comprehensive}{{17}{2021}{{Wu et~al.}}{{Wu, Pan, Chen, Long, Zhang and Yu}}}
+\bibcite{wu2018moleculenet}{{18}{2018}{{Wu et~al.}}{{Wu, Ramsundar, Feinberg, Gomes, Geniesse, Pappu, Leswing and Pande}}}
+\bibcite{xu2018powerful}{{19}{2019}{{Xu et~al.}}{{Xu, Hu, Leskovec and Jegelka}}}
+\bibcite{yang2019analyzing}{{20}{2019}{{Yang et~al.}}{{Yang, Swanson, Jin, Coley, Eiden, Gao, Guzman-Perez, Hopper, Kelley, Mathea et~al.}}}
+\bibcite{you2020graph}{{21}{2020}{{You et~al.}}{{You, Chen, Sui, Chen, Wang and Shen}}}
+\bibcite{zhang2020graph}{{22}{2020}{{Zhang et~al.}}{{Zhang, Chen, Li, Pan, Chen, Li and Chen}}}
+\csxdef{lastpage}{13}
+\gdef \@abspage@last{14}

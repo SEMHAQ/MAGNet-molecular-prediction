@@ -7,51 +7,49 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Warning--empty pages in duvenaud2015convolutional
 Warning--empty pages in hamilton2017inductive
 Warning--empty pages in hu2020strategies
-Warning--empty pages in kingma2015adam
 Warning--empty pages in kipf2017semi
-Warning--empty pages in li2016gated
-Warning--empty pages in schutt2017schnet
+Warning--empty pages in liu2022pre
 Warning--empty pages in velickovic2018graph
 Warning--empty pages in xu2018powerful
-You've used 18 entries,
+You've used 22 entries,
             2990 wiz_defined-function locations,
-            830 strings with 9713 characters,
-and the built_in function-call counts, 14100 in all, are:
-= -- 998
-> -- 756
-< -- 7
-+ -- 292
-- -- 270
-* -- 1639
-:= -- 2072
-add.period$ -- 43
-call.type$ -- 18
-change.case$ -- 179
-chr.to.int$ -- 18
-cite$ -- 27
-duplicate$ -- 996
-empty$ -- 923
-format.name$ -- 330
-if$ -- 2577
+            851 strings with 10632 characters,
+and the built_in function-call counts, 18156 in all, are:
+= -- 1348
+> -- 924
+< -- 10
++ -- 358
+- -- 330
+* -- 2052
+:= -- 2608
+add.period$ -- 52
+call.type$ -- 22
+change.case$ -- 219
+chr.to.int$ -- 22
+cite$ -- 29
+duplicate$ -- 1277
+empty$ -- 1195
+format.name$ -- 402
+if$ -- 3401
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 207
-newline$ -- 94
-num.names$ -- 72
-pop$ -- 408
+missing$ -- 255
+newline$ -- 111
+num.names$ -- 88
+pop$ -- 503
 preamble$ -- 1
-purify$ -- 161
+purify$ -- 197
 quote$ -- 0
-skip$ -- 303
+skip$ -- 439
 stack$ -- 0
-substring$ -- 456
-swap$ -- 758
-text.length$ -- 2
+substring$ -- 714
+swap$ -- 984
+text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 162
-warning$ -- 9
-while$ -- 74
+type$ -- 198
+warning$ -- 7
+while$ -- 101
 width$ -- 0
-write$ -- 246
-(There were 9 warnings)
+write$ -- 300
+(There were 7 warnings)

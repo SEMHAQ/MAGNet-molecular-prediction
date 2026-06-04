@@ -1,4 +1,4 @@
-\begin{thebibliography}{18}
+\begin{thebibliography}{22}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\href}[2]{#2}
@@ -20,6 +20,23 @@
 \newblock \bibinfo{journal}{Journal of Medicinal Chemistry}
   \bibinfo{volume}{39}, \bibinfo{pages}{2887--2893}.
 %Type = Inproceedings
+\bibitem[{Chen et~al.(2020)Chen, Kornblith, Norber and Hinton}]{chen2020simple}
+\bibinfo{author}{Chen, T.}, \bibinfo{author}{Kornblith, S.},
+  \bibinfo{author}{Norber, M.}, \bibinfo{author}{Hinton, G.},
+  \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{A simple framework for contrastive learning of visual
+  representations}, in: \bibinfo{booktitle}{International Conference on Machine
+  Learning (ICML)}, pp. \bibinfo{pages}{1597--1607}.
+%Type = Inproceedings
+\bibitem[{Devlin et~al.(2019)Devlin, Chang, Lee and Toutanova}]{devlin2019bert}
+\bibinfo{author}{Devlin, J.}, \bibinfo{author}{Chang, M.W.},
+  \bibinfo{author}{Lee, K.}, \bibinfo{author}{Toutanova, K.},
+  \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{{BERT}: Pre-training of deep bidirectional
+  transformers for language understanding}, in: \bibinfo{booktitle}{Proceedings
+  of the 2019 Conference of the North American Chapter of the Association for
+  Computational Linguistics (NAACL)}, pp. \bibinfo{pages}{4171--4186}.
+%Type = Inproceedings
 \bibitem[{Duvenaud et~al.(2015)Duvenaud, Maclaurin, Iparraguirre, Bombarell,
   Hirzel, Aspuru-Guzik and Adams}]{duvenaud2015convolutional}
 \bibinfo{author}{Duvenaud, D.K.}, \bibinfo{author}{Maclaurin, D.},
@@ -29,6 +46,14 @@
 \newblock \bibinfo{title}{Convolutional networks on graphs for learning
   molecular fingerprints}, in: \bibinfo{booktitle}{Advances in Neural
   Information Processing Systems (NeurIPS)}.
+%Type = Inproceedings
+\bibitem[{Gao et~al.(2021)Gao, Yao and Chen}]{gao2021simcse}
+\bibinfo{author}{Gao, T.}, \bibinfo{author}{Yao, X.}, \bibinfo{author}{Chen,
+  D.}, \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{{SimCSE}: Simple contrastive learning of sentence
+  embeddings}, in: \bibinfo{booktitle}{Proceedings of the 2021 Conference on
+  Empirical Methods in Natural Language Processing (EMNLP)}, pp.
+  \bibinfo{pages}{6894--6910}.
 %Type = Inproceedings
 \bibitem[{Gilmer et~al.(2017)Gilmer, Schoenholz, Riley, Vinyals and
   Dahl}]{gilmer2017neural}
@@ -47,6 +72,15 @@
   in: \bibinfo{booktitle}{Advances in Neural Information Processing Systems
   (NeurIPS)}.
 %Type = Inproceedings
+\bibitem[{He et~al.(2020)He, Fan, Wu, Xie and Girshick}]{he2020momentum}
+\bibinfo{author}{He, K.}, \bibinfo{author}{Fan, H.}, \bibinfo{author}{Wu, Y.},
+  \bibinfo{author}{Xie, S.}, \bibinfo{author}{Girshick, R.},
+  \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{Momentum contrast for unsupervised visual
+  representation learning}, in: \bibinfo{booktitle}{Proceedings of the IEEE/CVF
+  Conference on Computer Vision and Pattern Recognition (CVPR)}, pp.
+  \bibinfo{pages}{9729--9738}.
+%Type = Inproceedings
 \bibitem[{Hu et~al.(2020)Hu, Liu, Gomes, Zitnik, Liang, Pande and
   Leskovec}]{hu2020strategies}
 \bibinfo{author}{Hu, W.}, \bibinfo{author}{Liu, B.}, \bibinfo{author}{Gomes,
@@ -57,12 +91,6 @@
   in: \bibinfo{booktitle}{International Conference on Learning Representations
   (ICLR)}.
 %Type = Inproceedings
-\bibitem[{Kingma and Ba(2015)}]{kingma2015adam}
-\bibinfo{author}{Kingma, D.P.}, \bibinfo{author}{Ba, J.}, \bibinfo{year}{2015}.
-\newblock \bibinfo{title}{Adam: A method for stochastic optimization}, in:
-  \bibinfo{booktitle}{International Conference on Learning Representations
-  (ICLR)}.
-%Type = Inproceedings
 \bibitem[{Kipf and Welling(2017)}]{kipf2017semi}
 \bibinfo{author}{Kipf, T.N.}, \bibinfo{author}{Welling, M.},
   \bibinfo{year}{2017}.
@@ -70,13 +98,19 @@
   convolutional networks}, in: \bibinfo{booktitle}{International Conference on
   Learning Representations (ICLR)}.
 %Type = Inproceedings
-\bibitem[{Li et~al.(2016)Li, Zemel, Brockschmidt and Tarlow}]{li2016gated}
-\bibinfo{author}{Li, Y.}, \bibinfo{author}{Zemel, R.},
-  \bibinfo{author}{Brockschmidt, M.}, \bibinfo{author}{Tarlow, D.},
-  \bibinfo{year}{2016}.
-\newblock \bibinfo{title}{Gated graph sequence neural networks}, in:
-  \bibinfo{booktitle}{International Conference on Learning Representations
-  (ICLR)}.
+\bibitem[{Liu et~al.(2022)Liu, Guo and Tang}]{liu2022pre}
+\bibinfo{author}{Liu, S.}, \bibinfo{author}{Guo, H.}, \bibinfo{author}{Tang,
+  J.}, \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{Pre-training molecular graph representation with 3d
+  geometry}, in: \bibinfo{booktitle}{International Conference on Learning
+  Representations (ICLR)}.
+%Type = Article
+\bibitem[{Oord et~al.(2018)Oord, Li and Vinyals}]{oord2018representation}
+\bibinfo{author}{Oord, A.v.d.}, \bibinfo{author}{Li, Y.},
+  \bibinfo{author}{Vinyals, O.}, \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{Representation learning with contrastive predictive
+  coding}.
+\newblock \bibinfo{journal}{arXiv preprint arXiv:1807.03748} .
 %Type = Article
 \bibitem[{Rogers and Hahn(2010)}]{rogers2010extended}
 \bibinfo{author}{Rogers, D.}, \bibinfo{author}{Hahn, M.}, \bibinfo{year}{2010}.
@@ -94,16 +128,6 @@
   molecular data}, in: \bibinfo{booktitle}{Advances in Neural Information
   Processing Systems (NeurIPS)}, pp. \bibinfo{pages}{12559--12571}.
 %Type = Inproceedings
-\bibitem[{Sch{\"u}tt et~al.(2017)Sch{\"u}tt, Kindermans, Sauceda, Chmiela,
-  Tkatchenko and M{\"u}ller}]{schutt2017schnet}
-\bibinfo{author}{Sch{\"u}tt, K.T.}, \bibinfo{author}{Kindermans, P.J.},
-  \bibinfo{author}{Sauceda, H.E.}, \bibinfo{author}{Chmiela, S.},
-  \bibinfo{author}{Tkatchenko, A.}, \bibinfo{author}{M{\"u}ller, K.R.},
-  \bibinfo{year}{2017}.
-\newblock \bibinfo{title}{Schnet: A continuous-filter convolutional neural
-  network for modeling quantum interactions}, in: \bibinfo{booktitle}{Advances
-  in Neural Information Processing Systems (NeurIPS)}.
-%Type = Inproceedings
 \bibitem[{Veli\v{c}kovi\'{c} et~al.(2018)Veli\v{c}kovi\'{c}, Cucurull,
   Casanova, Romero, Li\`{o} and Bengio}]{velickovic2018graph}
 \bibinfo{author}{Veli\v{c}kovi\'{c}, P.}, \bibinfo{author}{Cucurull, G.},
@@ -114,12 +138,14 @@
   \bibinfo{booktitle}{International Conference on Learning Representations
   (ICLR)}.
 %Type = Article
-\bibitem[{Weininger(1988)}]{weininger1988smiles}
-\bibinfo{author}{Weininger, D.}, \bibinfo{year}{1988}.
-\newblock \bibinfo{title}{Smiles, a chemical language and information system.
-  1. introduction to methodology and encoding rules}.
-\newblock \bibinfo{journal}{Journal of Chemical Information and Computer
-  Sciences} \bibinfo{volume}{28}, \bibinfo{pages}{31--36}.
+\bibitem[{Wang et~al.(2022)Wang, Guo, Wang, Sun and Huang}]{wang2022molclr}
+\bibinfo{author}{Wang, S.}, \bibinfo{author}{Guo, Y.}, \bibinfo{author}{Wang,
+  Y.}, \bibinfo{author}{Sun, H.}, \bibinfo{author}{Huang, J.},
+  \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{{MolCLR}: Molecular contrastive learning of
+  representations via graph neural networks}.
+\newblock \bibinfo{journal}{Journal of Chemical Information and Modeling}
+  \bibinfo{volume}{62}, \bibinfo{pages}{3183--3194}.
 %Type = Article
 \bibitem[{Wu et~al.(2021)Wu, Pan, Chen, Long, Zhang and
   Yu}]{wu2021comprehensive}
@@ -161,6 +187,14 @@
   property prediction}.
 \newblock \bibinfo{journal}{Journal of Chemical Information and Modeling}
   \bibinfo{volume}{59}, \bibinfo{pages}{3370--3388}.
+%Type = Inproceedings
+\bibitem[{You et~al.(2020)You, Chen, Sui, Chen, Wang and Shen}]{you2020graph}
+\bibinfo{author}{You, Y.}, \bibinfo{author}{Chen, T.}, \bibinfo{author}{Sui,
+  Y.}, \bibinfo{author}{Chen, T.}, \bibinfo{author}{Wang, Z.},
+  \bibinfo{author}{Shen, Y.}, \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{Graph contrastive learning with augmentations}, in:
+  \bibinfo{booktitle}{Advances in Neural Information Processing Systems
+  (NeurIPS)}, pp. \bibinfo{pages}{5812--5823}.
 %Type = Article
 \bibitem[{Zhang et~al.(2020)Zhang, Chen, Li, Pan, Chen, Li and
   Chen}]{zhang2020graph}

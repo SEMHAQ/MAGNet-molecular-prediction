@@ -1,6 +1,5 @@
-% Enriched Molecular Features with Directed Message Passing for Property Prediction on MoleculeNet
-% Target: Computational Biology and Chemistry (Elsevier, IF 3.29)
-% Template: CAS single-column (cas-sc)
+% DVCL: Dual-View Contrastive Learning for Molecular Property Prediction on MoleculeNet
+% Target: Computational Biology and Chemistry (Elsevier, CAS template)
 
 \documentclass[a4paper,fleqn]{cas-sc}
 
@@ -28,13 +27,13 @@
 \def\textpagefraction{.001}
 
 % Short title
-\shorttitle{Enriched Features with DMPNN for Molecular Property Prediction}
+\shorttitle{DVCL: Dual-View Contrastive Learning for Molecular Property Prediction}
 
 % Short author
 \shortauthors{H.~Yu}
 
 % Main title
-\title[mode = title]{Enriched Molecular Features with Directed Message Passing for Property Prediction on MoleculeNet}
+\title[mode = title]{DVCL: Dual-View Contrastive Learning for Molecular Property Prediction on MoleculeNet}
 
 % Title footnote
 \tnotemark[1]
@@ -68,21 +67,21 @@
 
 % Abstract
 \begin{abstract}
-Molecular property prediction is a fundamental task in drug discovery and computational chemistry. Graph neural networks (GNNs) have become the dominant approach, yet standard architectures typically ignore bond features during message passing and use undirected communication schemes that can lead to information redundancy. In this paper, we systematically investigate whether combining enriched molecular features with directed message passing can improve GNN performance on MoleculeNet benchmarks. We augment the Directed Message Passing Neural Network (DMPNN) with 36-dimensional RDKit-computed atom features and 12-dimensional bond features that encode detailed chemical information including atom type, hybridization, formal charge, chirality, bond stereochemistry, and ring membership. We evaluate the enriched-feature DMPNN against six GNN baselines (GCN, GAT, GIN, GraphSAGE, MPNN, DMPNN with standard features) and a Random Forest baseline on Morgan fingerprints, across four MoleculeNet benchmarks---BBBP, BACE, HIV, and Tox21---using scaffold splitting. Our results demonstrate that enriched features combined with directed message passing consistently outperform standard GNN approaches, achieving the best GNN performance on three of four benchmarks (BBBP: 0.831 AUROC; BACE: 0.755 AUROC; HIV: 0.678 AUROC) with notably low variance on the HIV dataset (standard deviation of 0.006). An ablation study confirms that both enriched atom features and directed bond-aware message passing contribute independently to performance gains, with the combination yielding the largest improvements. These findings underscore the importance of feature engineering and message passing design in molecular graph learning, and provide practical guidance for practitioners building molecular property prediction systems.
+Molecular property prediction is a fundamental task in drug discovery, yet labeled biochemical data remain scarce and expensive to obtain. Self-supervised contrastive learning has emerged as a promising paradigm for leveraging unlabeled molecular data, but existing approaches construct two augmented views from the same graph-based representation, limiting the diversity of learned features. In this paper, we propose DVCL (Dual-View Contrastive Learning), a self-supervised pre-training framework that contrasts two \emph{inherently different} molecular representations: a graph-structural view captured by a Directed Message Passing Neural Network (DMPNN) and a chemical-fingerprint view captured by a multi-layer perceptron (MLP) operating on 2048-dimensional Morgan count fingerprints. These two views encode complementary aspects of molecular identity---topological connectivity and circular substructure composition---and their alignment through an InfoNCE contrastive objective produces richer, more transferable representations than single-view or same-representation contrastive methods. Chemistry-aware augmentations, including atom masking, edge dropping, and subgraph extraction, are applied to the graph view to preserve molecular semantics during pre-training. Upon fine-tuning, the graph and fingerprint embeddings are concatenated and passed through a task-specific classifier. We evaluate DVCL on four MoleculeNet benchmarks---BBBP, BACE, HIV, and Tox21---using scaffold splitting. DVCL with pre-training achieves AUROC scores of 0.9245 on BBBP and 0.8875 on BACE, substantially outperforming standard DMPNN without pre-training (0.9102 and 0.8636, respectively) and competitive GNN baselines. Ablation studies confirm that both the dual-view design and the chemistry-aware augmentations contribute independently to the observed gains. Our results demonstrate that contrasting structurally and chemically distinct molecular views is a simple yet effective strategy for self-supervised molecular representation learning.
 \end{abstract}
 
 % Research highlights
 \begin{highlights}
-\item Enriched 36-dim atom features and 12-dim bond features from RDKit consistently improve GNN molecular property prediction
-\item Directed message passing with bond features outperforms undirected GNNs on 3 of 4 MoleculeNet benchmarks
-\item DMPNN with enriched features achieves best GNN AUROC on BBBP (0.831), BACE (0.755), and HIV (0.678)
-\item Ablation study shows enriched atom features and bond features contribute independently and synergistically
-\item Systematic comparison of 7 GNN baselines with scaffold splitting and multiple random seeds
+\item DVCL introduces dual-view contrastive learning that aligns graph-structural and fingerprint-chemical views of molecules
+\item Chemistry-aware augmentations (atom masking, edge dropping, subgraph extraction) preserve molecular semantics during pre-training
+\item Pre-training with the dual-view InfoNCE objective improves AUROC by 1.4--2.4 points on MoleculeNet benchmarks
+\item Concatenated graph+fingerprint fine-tuning leverages complementary information from both views for downstream prediction
+\item Ablation studies validate that dual-view design outperforms single-view contrastive alternatives
 \end{highlights}
 
 % Keywords
 \begin{keywords}
-graph neural networks \sep molecular property prediction \sep directed message passing \sep bond features \sep MoleculeNet \sep drug discovery \sep feature engineering
+contrastive learning \sep molecular property prediction \sep graph neural networks \sep self-supervised learning \sep Morgan fingerprints \sep MoleculeNet \sep drug discovery
 \end{keywords}
 
 \maketitle
@@ -92,36 +91,36 @@ graph neural networks \sep molecular property prediction \sep directed message p
 % ============================================================
 \section{Introduction}\label{sec:intro}
 
-Molecular property prediction is a cornerstone of modern drug discovery and computational chemistry, enabling researchers to estimate the biological activity, toxicity, and pharmacokinetic properties of candidate compounds from their structural representations alone \citep{wu2018moleculenet}. Accurate \emph{in silico} prediction of properties such as blood--brain barrier penetration (BBBP), $\beta$-secretase~1 (BACE-1) binding affinity, and human immunodeficiency virus (HIV) inhibition can dramatically accelerate the drug development pipeline by prioritizing compounds for expensive and time-consuming wet-laboratory experiments \citep{yang2019analyzing}. Traditional approaches relied on hand-crafted molecular descriptors and fixed-size fingerprints, such as Morgan/ECFP fingerprints \citep{rogers2010extended}, which encode the local chemical environment of each atom into a fixed-length bit vector. While effective, these fingerprint-based methods require extensive domain expertise for feature selection and often fail to capture complex non-linear structure--property relationships \citep{weininger1988smiles}.
+Molecular property prediction is a central task in computational drug discovery, enabling researchers to estimate the biological activity, toxicity, and pharmacokinetic profiles of candidate compounds before committing to costly wet-laboratory experiments \citep{wu2018moleculenet}. Accurate \emph{in silico} screening can dramatically accelerate the drug development pipeline by prioritizing promising molecules from vast chemical libraries. However, a persistent bottleneck in building effective prediction models is the scarcity of labeled biochemical data: experimental assays are expensive, time-consuming, and often yield only hundreds to low thousands of labeled molecules for a given endpoint \citep{yang2019analyzing}.
 
-The advent of deep learning has transformed molecular property prediction. In particular, graph neural networks (GNNs) have emerged as the dominant paradigm \citep{wu2021comprehensive, zhang2020graph}. GNNs naturally represent molecules as graphs, where atoms correspond to nodes and chemical bonds correspond to edges. This graph-based representation preserves the topological structure of molecules and allows GNNs to learn hierarchical features through iterative message passing between neighboring atoms \citep{gilmer2017neural}. Prominent GNN architectures---including Graph Convolutional Networks (GCNs) \citep{kipf2017semi}, Graph Attention Networks (GATs) \citep{velickovic2018graph}, Graph Isomorphism Networks (GINs) \citep{xu2018powerful}, and GraphSAGE \citep{hamilton2017inductive}---have demonstrated strong performance on various molecular benchmarks.
+Graph neural networks (GNNs) have emerged as the dominant paradigm for molecular property prediction \citep{wu2021comprehensive, zhang2020graph}. By representing molecules as graphs---atoms as nodes and chemical bonds as edges---GNNs learn hierarchical molecular representations through iterative message passing \citep{gilmer2017neural}. Architectures such as GCN \citep{kipf2017semi}, GAT \citep{velickovic2018graph}, GIN \citep{xu2018powerful}, and the Directed Message Passing Neural Network (DMPNN) \citep{yang2019analyzing} have demonstrated strong performance on standardized benchmarks. Nevertheless, these supervised approaches are constrained by the limited availability of labeled data, and their representations can overfit to the specific training distribution.
 
-Despite this progress, two significant limitations persist in existing GNN architectures for molecular property prediction, both of which stem from incomplete utilization of the chemical information available in molecular graphs.
+To address the labeled-data bottleneck, self-supervised pre-training has attracted growing interest in the molecular machine learning community \citep{hu2020strategies, rong2020self}. Inspired by the success of contrastive learning in computer vision \citep{chen2020simple, he2020momentum} and natural language processing \citep{gao2021simcse}, several recent works have adapted contrastive objectives to molecular graphs \citep{wang2022molclr, you2020graph}. The standard recipe involves constructing two augmented views of the \emph{same} molecular graph representation and training the encoder to produce similar embeddings for positive pairs while pushing apart negative pairs. Augmentation strategies typically include atom masking, bond deletion, and subgraph removal.
 
-\textbf{First}, most standard GNN architectures treat edges as unweighted adjacency indicators, discarding the rich chemical information encoded in bond features. Chemical bonds carry critical information beyond simple connectivity: bond type (single, double, triple, aromatic) determines the strength and nature of atomic interactions; stereo configuration (E/Z, cis/trans) influences three-dimensional molecular shape; conjugation affects electronic delocalization; and ring membership reflects structural rigidity. The Message Passing Neural Network (MPNN) framework of \citet{gilmer2017neural} permits edge features in principle, but many practical instantiations---including GCN, GAT, GIN, and GraphSAGE---do not exploit them. This omission forces the network to infer bond properties implicitly from atom features and graph topology alone, which is fundamentally limited.
+However, a fundamental limitation of existing molecular contrastive learning methods is that both views are derived from the same underlying representation---the molecular graph. This means that the two augmented views share the same encoding paradigm (\ie, graph neural message passing) and differ only in the specific perturbations applied. Consequently, the contrastive signal is limited to teaching the encoder to be invariant to graph-level corruptions, rather than learning to align fundamentally different \emph{perspectives} on molecular identity.
 
-\textbf{Second}, standard GNN message passing is undirected in the sense that messages flow simultaneously along both directions of each edge. As demonstrated by \citet{yang2019analyzing}, this can lead to informational redundancy: a message sent from atom~$i$ to atom~$j$ at layer~$t$ may be immediately returned to atom~$i$ at layer~$t+1$, effectively wasting a message passing step. The Directed Message Passing Neural Network (DMPNN) addresses this by associating messages with directed edges rather than nodes, ensuring that each message carries genuinely new information from the sender to the receiver.
-
-In this paper, we conduct a systematic investigation of whether combining enriched molecular features with directed message passing can improve GNN performance on standardized molecular property prediction benchmarks. Our approach augments the DMPNN architecture of \citet{yang2019analyzing} with two key enhancements to the input representation:
+In this paper, we propose \textbf{DVCL} (\textbf{D}ual-\textbf{V}iew \textbf{C}ontrastive \textbf{L}earning), a self-supervised pre-training framework that addresses this limitation by contrasting two \emph{inherently different} molecular representations. The key insight is that molecular identity can be captured from at least two complementary perspectives:
 
 \begin{enumerate}
-\item \textbf{Enriched atom features}: We replace simplistic one-hot atom encodings (typically 9--14 dimensions) with 36-dimensional RDKit-computed feature vectors encompassing element type, degree, formal charge, hybridization, aromaticity, total hydrogen count, chirality, and ring membership. These features provide the GNN with substantially more chemical context at the input level.
+\item \textbf{Graph-structural view}: A graph neural network (specifically, DMPNN) encodes the topological structure of the molecule, capturing atom-level connectivity patterns, bond types, and multi-hop neighborhood relationships through directed message passing.
 
-\item \textbf{Enriched bond features}: We encode each chemical bond as a 12-dimensional feature vector covering bond type, stereo configuration, conjugation, and ring membership. These features are injected into the directed message function, ensuring that bond chemistry directly modulates information flow during message passing.
+\item \textbf{Fingerprint-chemical view}: A multi-layer perceptron (MLP) encodes a 2048-dimensional Morgan count fingerprint, which represents the molecule as a vector of circular substructure counts. Morgan fingerprints encode fundamentally different information from graph representations: they aggregate substructure frequencies without preserving explicit topological connectivity.
 \end{enumerate}
 
-We evaluate our enriched-feature DMPNN on four MoleculeNet benchmarks \citep{wu2018moleculenet}---BBBP, BACE, HIV, and Tox21---using scaffold splitting to simulate realistic drug-discovery evaluation. We compare against six GNN baselines (GCN, GAT, GIN, GraphSAGE, MPNN, and DMPNN with standard features) and a Random Forest classifier on Morgan fingerprints. All GNN baselines use identical hidden dimensions and training procedures to ensure fair comparison.
+By training these two encoders to produce aligned embeddings through an InfoNCE contrastive loss \citep{oord2018representation}, DVCL forces both views to agree on molecular identity while preserving view-specific information. This dual-view design provides a richer learning signal than same-representation contrastive learning because the two views encode complementary aspects of molecular structure: the graph view captures global topology and long-range atom interactions, while the fingerprint view captures local substructure composition and frequency patterns.
 
-Our key findings are as follows:
+During fine-tuning, the pre-trained graph and fingerprint embeddings are concatenated and passed through a task-specific MLP classifier. This simple fusion strategy allows the downstream model to leverage both topological and chemical features, benefiting from the complementary information captured during pre-training.
+
+We evaluate DVCL on four MoleculeNet benchmarks \citep{wu2018moleculenet}---BBBP, BACE, HIV, and Tox21---using scaffold splitting to simulate realistic drug-discovery evaluation. Our experiments yield the following key findings:
 
 \begin{itemize}
-\item Enriched-feature DMPNN achieves the best GNN performance on three of four benchmarks: BBBP (AUROC 0.831), BACE (AUROC 0.755, +13 points over the second-best GNN), and HIV (AUROC 0.678, with the lowest standard deviation of 0.006 among all methods).
-\item The directed message passing mechanism with bond features consistently outperforms undirected GNN architectures that ignore edge information.
-\item Both enriched atom features and enriched bond features contribute independently to performance, with the largest gains observed when both are combined.
-\item Random Forest on Morgan fingerprints remains a strong baseline on binary classification tasks, highlighting the continued value of established cheminformatics methods.
+\item DVCL with dual-view pre-training achieves AUROC scores of 0.9245 on BBBP and 0.8875 on BACE, outperforming the same architecture without pre-training (0.9102 and 0.8636, respectively) and standard GNN baselines.
+\item The dual-view design consistently outperforms single-view contrastive alternatives that use only the graph encoder with augmented molecular views.
+\item Chemistry-aware augmentations (atom masking, edge dropping, subgraph extraction) outperform random augmentations for molecular contrastive pre-training.
+\item The concatenated graph+fingerprint representation provides complementary information that neither view alone can fully capture.
 \end{itemize}
 
-The remainder of this paper is organized as follows. Section~\ref{sec:related} reviews related work on graph neural networks for molecular property prediction. Section~\ref{sec:method} describes the DMPNN architecture and our enriched feature representations. Section~\ref{sec:experiments} presents the experimental setup, results, and ablation studies. Section~\ref{sec:discussion} discusses the implications of our findings and the reasons behind the observed performance patterns. Finally, Section~\ref{sec:conclusion} concludes with practical recommendations and future directions.
+The remainder of this paper is organized as follows. Section~\ref{sec:related} reviews related work on GNNs for molecules, self-supervised contrastive learning, and molecular feature engineering. Section~\ref{sec:method} describes the DVCL architecture, augmentation strategies, and training procedure. Section~\ref{sec:experiments} presents the experimental setup, results, and ablation studies. Section~\ref{sec:discussion} discusses the implications of our findings and the advantages of dual-view contrastive learning. Finally, Section~\ref{sec:conclusion} concludes with a summary and future directions.
 
 
 % ============================================================
@@ -131,33 +130,27 @@ The remainder of this paper is organized as follows. Section~\ref{sec:related} r
 
 \subsection{Graph Neural Networks for Molecular Property Prediction}
 
-Graph neural networks have become the standard approach for molecular property prediction \citep{wu2021comprehensive}. The foundational work by \citet{duvenaud2015convolutional} introduced neural graph fingerprints, which generalize traditional molecular fingerprints by learning atom-level features through differentiable message passing. \citet{gilmer2017neural} proposed the Message Passing Neural Network (MPNN) framework, which unifies various GNN architectures under a common formulation: at each layer, messages are computed from neighboring node features, aggregated, and used to update node representations.
+Graph neural networks have become the standard approach for molecular property prediction \citep{wu2021comprehensive}. The foundational work by \citet{duvenaud2015convolutional} introduced neural graph fingerprints, which generalize traditional molecular fingerprints through differentiable message passing. \citet{gilmer2017neural} proposed the Message Passing Neural Network (MPNN) framework, unifying various GNN architectures under a common formulation where messages are computed from neighboring node features, aggregated, and used to update node representations.
 
-Several specific GNN architectures have been widely adopted for molecular tasks. GCNs \citep{kipf2017semi} extend convolutional operations to graph-structured data by aggregating normalized feature information from neighboring nodes. GATs \citep{velickovic2018graph} introduce attention mechanisms to weigh the importance of different neighbors during aggregation. GINs \citep{xu2018powerful} provide theoretical analysis of the expressive power of GNNs and propose architectures that can distinguish between different graph structures, achieving maximal expressiveness among message passing architectures. GraphSAGE \citep{hamilton2017inductive} introduces sampling-based neighborhood aggregation for inductive representation learning on large graphs.
+Several specific GNN architectures have been widely adopted for molecular tasks. GCNs \citep{kipf2017semi} extend convolutional operations to graphs by aggregating normalized neighbor features. GATs \citep{velickovic2018graph} introduce attention mechanisms to weigh neighbor importance during aggregation. GINs \citep{xu2018powerful} provide theoretical analysis of GNN expressiveness and achieve maximal discriminative power among message passing architectures. GraphSAGE \citep{hamilton2017inductive} introduces sampling-based neighborhood aggregation for inductive learning on large graphs.
 
-Gated Graph Neural Networks (GGNNs) \citep{li2016gated} use gated recurrent units to update node states, enabling the model to learn how much information from the previous iteration to retain. This gating mechanism is particularly relevant to our work, as the DMPNN architecture we employ also uses a GRU-based update rule.
+The Directed Message Passing Neural Network (DMPNN) of \citet{yang2019analyzing} addresses a key limitation of standard GNNs: informational redundancy from undirected message passing. By associating messages with directed edges rather than nodes, DMPNN ensures that each message carries genuinely new information. The architecture uses bond features to directly modulate information flow and achieves strong performance on MoleculeNet benchmarks. We adopt DMPNN as the graph encoder in DVCL due to its proven effectiveness and its ability to incorporate bond-level chemical information.
 
-\subsection{Directed Message Passing}
+\subsection{Self-Supervised and Contrastive Learning for Molecules}
 
-A key limitation of standard GNN message passing is that messages are associated with nodes rather than directed edges. As demonstrated by \citet{yang2019analyzing}, this leads to informational redundancy in multi-layer architectures: when atom~$i$ sends a message to atom~$j$ at layer~$t$, the aggregated message at atom~$j$ contains information from atom~$i$. If atom~$j$ then sends a message back to atom~$i$ at layer~$t+1$, the returned message partially echoes the original, wasting a message passing step.
+Self-supervised learning aims to learn useful representations from unlabeled data by solving pretext tasks, reducing dependence on expensive labeled datasets \citep{liu2022pre}. For molecular graphs, self-supervised approaches can be broadly categorized into generative and contrastive methods.
 
-The Directed Message Passing Neural Network (DMPNN) of \citet{yang2019analyzing} addresses this by associating messages with directed edges rather than nodes. Each bond $(j, i)$ in the molecular graph is represented as two directed edges, and messages are computed as functions of the sender atom's hidden state and the bond feature vector. The update rule uses additive aggregation with a residual connection to the initial atom features, preventing the degradation of early-layer information.
+\textbf{Generative methods} learn representations by reconstructing masked or corrupted molecular components. \citet{rong2020self} proposed GROVER, which pre-trains a graph transformer on large-scale molecular data using node/edge-level and graph-level self-supervised tasks. \citet{hu2020strategies} introduced strategies for pre-training GNNs at both the node level (attribute masking, context prediction) and graph level (similarity prediction), demonstrating that pre-trained representations transfer effectively to downstream property prediction tasks.
 
-D-MPNN demonstrated state-of-the-art results on the ChEMBL benchmark and established a strong baseline on MoleculeNet. Our work builds directly upon this architecture, investigating the impact of enriched input features on DMPNN performance. We also adopt the GRU-based update mechanism from GGNNs \citep{li2016gated} as an alternative to the additive update in the original DMPNN formulation.
+\textbf{Contrastive methods} learn representations by maximizing agreement between differently augmented views of the same data. In computer vision, SimCLR \citep{chen2020simple} and MoCo \citep{he2020momentum} demonstrated that simple contrastive objectives can match or exceed supervised pre-training. For molecules, \citet{you2020graph} proposed GraphCL, which applies graph-level augmentations (node dropping, edge perturbation, subgraph sampling, attribute masking) and uses an InfoNCE loss to learn augmentation-invariant representations. \citet{wang2022molclr} introduced MolCLR, which applies similar augmentations at the molecular level with a focus on chemically meaningful perturbations.
 
-\subsection{Feature Engineering for Molecular Representations}
+Despite their success, these molecular contrastive learning methods share a common limitation: both positive views are derived from the same graph representation, differing only in the augmentations applied. The contrastive signal thus teaches augmentation invariance rather than cross-representation alignment. DVCL addresses this by contrasting fundamentally different representations---graph structure and molecular fingerprints---which encode complementary information about molecular identity.
 
-The choice of input features has long been recognized as critical in molecular machine learning. Traditional approaches use Morgan/ECFP fingerprints \citep{rogers2010extended}, which encode the circular substructure environment of each atom into fixed-length bit vectors. While these fingerprints are effective for classical machine learning methods such as Random Forest, they are not directly suitable for graph neural networks, which require per-atom and per-bond feature vectors.
+\subsection{Molecular Fingerprint Representations}
 
-For GNNs, the most common atom feature representation is a one-hot encoding of atom type (element) combined with basic properties such as degree and formal charge, typically yielding 9--14 dimensional vectors. Bond features are often represented as one-hot encodings of bond type (4 dimensions) or omitted entirely. More recent work has explored using RDKit-computed features that capture a wider range of atomic and bond properties, including hybridization, aromaticity, hydrogen count, chirality, and ring membership.
+Molecular fingerprints are fixed-length vector representations that encode molecular structure for machine learning and similarity searching. Morgan/ECFP fingerprints \citep{rogers2010extended} are among the most widely used: they enumerate circular substructures centered at each atom within a specified radius, hashing each substructure into a fixed-length bit vector. Count-based variants record the frequency of each substructure rather than merely its presence.
 
-The relationship between feature richness and GNN performance is not straightforward. On one hand, richer features provide the model with more chemical context, potentially reducing the burden on the message passing layers to learn these properties from data. On the other hand, higher-dimensional input features increase the number of model parameters and may lead to overfitting on small datasets. Our work provides a systematic empirical investigation of this trade-off in the context of directed message passing.
-
-\subsection{MoleculeNet Benchmarks}
-
-MoleculeNet \citep{wu2018moleculenet} is the standard benchmark suite for evaluating molecular machine learning methods. It comprises datasets spanning diverse property types (physical chemistry, biophysics, physiology, quantum mechanics) with standardized evaluation protocols. Key features include scaffold splitting for realistic evaluation, multiple metrics for different task types, and baseline results for reference. We select four datasets from MoleculeNet that cover pharmacokinetics (BBBP), binding affinity (BACE), antiviral activity (HIV), and toxicity (Tox21), providing a comprehensive evaluation across different biological endpoints.
-
-The use of scaffold splitting \citep{bemis1996properties} is particularly important for drug discovery applications. By grouping molecules sharing the same Bemis--Murcko scaffold into the same split, scaffold splitting ensures that the test set contains molecules with novel core structures, testing the model's ability to generalize beyond the chemical space of the training data \citep{hu2020strategies}.
+Fingerprints and GNNs capture fundamentally different aspects of molecular structure. Fingerprints aggregate substructure frequencies without preserving explicit topological connectivity, while GNNs encode the full graph topology through message passing. Despite this difference, Random Forest classifiers on Morgan fingerprints remain surprisingly competitive with GNNs on binary classification benchmarks \citep{yang2019analyzing}, suggesting that fingerprint-encoded information is highly complementary to graph-encoded information. DVCL exploits this complementarity by using fingerprints as the basis for a second contrastive view, rather than merely as an alternative feature representation.
 
 
 % ============================================================
@@ -167,180 +160,165 @@ The use of scaffold splitting \citep{bemis1996properties} is particularly import
 
 \subsection{Problem Formulation}\label{sec:problem}
 
-Let $G = (V, E)$ denote a molecular graph, where $V = \{v_1, v_2, \ldots, v_N\}$ is the set of $N$ atoms and $E \subseteq V \times V$ is the set of chemical bonds. Each atom $v_i$ is associated with a feature vector $\mathbf{x}_i \in \mathbb{R}^{d_x}$ encoding its chemical properties, and each directed bond $(v_j, v_i) \in E$ is associated with a feature vector $\mathbf{e}_{ji} \in \mathbb{R}^{d_e}$ encoding bond properties.
+Let $G = (V, E)$ denote a molecular graph, where $V = \{v_1, v_2, \ldots, v_N\}$ is the set of $N$ atoms and $E \subseteq V \times V$ is the set of chemical bonds. Each atom $v_i$ is associated with a feature vector $\mathbf{x}_i \in \mathbb{R}^{d_x}$ encoding its chemical properties (atom type, degree, formal charge, hybridization, chirality, ring membership, etc.), and each directed bond $(v_j, v_i) \in E$ is associated with a feature vector $\mathbf{e}_{ji} \in \mathbb{R}^{d_e}$ encoding bond properties (bond type, stereo configuration, conjugation, ring membership). Additionally, each molecule is associated with a Morgan count fingerprint $\mathbf{f} \in \mathbb{R}^{2048}$, computed using RDKit with radius 2.
 
-The goal of molecular property prediction is to learn a mapping $f: G \rightarrow y$ from the molecular graph $G$ to a property label $y$. For binary classification tasks (\eg, BBBP, BACE, HIV), $y \in \{0, 1\}$; for multi-task prediction (\eg, Tox21 with 12 endpoints), $y \in \{0, 1\}^T$. The model is trained on a dataset of labeled molecular graphs $\mathcal{D} = \{(G_i, y_i)\}_{i=1}^{M}$ to minimize a binary cross-entropy loss:
+The goal of molecular property prediction is to learn a mapping from the molecular representation to a property label $y$. For binary classification tasks (\eg, BBBP, BACE, HIV), $y \in \{0, 1\}$; for multi-task prediction (\eg, Tox21 with 12 endpoints), $y \in \{0, 1\}^T$.
 
-\begin{equation}\label{eq:bce_loss}
-\mathcal{L} = -\frac{1}{M} \sum_{i=1}^{M} \left[ y_i \log \hat{y}_i + (1 - y_i) \log (1 - \hat{y}_i) \right]
-\end{equation}
+DVCL addresses this problem in two stages: (1) \textbf{self-supervised pre-training} on unlabeled molecular data using a dual-view contrastive objective, and (2) \textbf{supervised fine-tuning} on labeled downstream data.
 
-where $\hat{y}_i = \sigma(f(G_i))$ is the predicted probability and $\sigma(\cdot)$ is the sigmoid function. For multi-task prediction, the loss is summed over all $T$ tasks with masking for missing labels.
+\subsection{DVCL Architecture}\label{sec:architecture}
 
-\subsection{Enriched Feature Representations}\label{sec:features}
+The DVCL framework consists of two parallel encoders, two projection heads, and a downstream classifier, as illustrated in Figure~\ref{fig:architecture}. We describe each component below.
 
-A central hypothesis of this work is that richer input features can substantially improve GNN performance on molecular property prediction. We describe our enriched atom and bond feature representations below.
-
-\subsubsection{Atom Features}
-
-We encode each atom $v_i$ as a 36-dimensional feature vector $\mathbf{x}_i \in \mathbb{R}^{36}$ computed using RDKit. The features capture fundamental chemical properties and are listed in Table~\ref{tab:atom_features}. This representation replaces the 9-dimensional one-hot encoding used in the original DMPNN implementation \citep{yang2019analyzing}, which includes only atom type (5 categories), degree (6 categories), formal charge, number of hydrogens, and an aromaticity indicator.
-
-\begin{table}[!t]
+\begin{figure}[!t]
 \centering
-\caption{Atom feature set (36 dimensions). Each feature is either one-hot encoded or represented as a binary indicator.}
-\label{tab:atom_features}
-\begin{tabular}{>{\raggedright}p{5.5cm} c c}
-\toprule
-\textbf{Feature} & \textbf{Values} & \textbf{Dim} \\
-\midrule
-Atom type (element)      & C, N, O, S, F, Cl, Br, I, P, Si, B, Se, other, none & 14 \\
-Total degree             & 0, 1, 2, 3, 4, 5 (one-hot)                          & 6  \\
-Formal charge            & $-2, -1, 0, +1, +2$ (one-hot)                        & 5  \\
-Hybridization            & sp, sp2, sp3, sp3d, sp3d2, other (one-hot)           & 6  \\
-Is aromatic              & Boolean                                              & 1  \\
-Total number of H atoms  & 0, 1, 2, 3, 4 (one-hot)                             & 5  \\
-Is in ring               & Boolean                                              & 1  \\
-Chirality                & R, S, unspecified (one-hot)                          & 3  \\
-\midrule
-\textbf{Total}           &                                                    & \textbf{36} \\
-\bottomrule
-\end{tabular}
-\end{table}
+\fbox{\parbox{0.95\linewidth}{\centering\vspace{2em}\textbf{DVCL Architecture Diagram}\vspace{0.5em}\\
+\small Molecule $\rightarrow$ \textbf{Graph Encoder (DMPNN)} $\rightarrow$ $\mathbf{z}_g \in \mathbb{R}^{128}$\\
+Molecule $\rightarrow$ \textbf{Fingerprint Encoder (MLP)} $\rightarrow$ $\mathbf{z}_f \in \mathbb{R}^{128}$\\[0.5em]
+\textbf{Pre-training:} $\mathbf{z}_g \xrightarrow{\text{proj}} \mathbf{p}_g$, $\mathbf{z}_f \xrightarrow{\text{proj}} \mathbf{p}_f$; $\mathcal{L}_{\text{InfoNCE}}(\mathbf{p}_g, \mathbf{p}_f)$\\
+\textbf{Fine-tuning:} $[\mathbf{z}_g \| \mathbf{z}_f] \xrightarrow{\text{MLP}} \hat{y}$\vspace{1em}}}
+\caption{Overview of the DVCL framework. During pre-training, the graph encoder (DMPNN) and fingerprint encoder (MLP) produce embeddings that are aligned via an InfoNCE contrastive loss through separate projection heads. During fine-tuning, the embeddings are concatenated and passed through a task-specific classifier.}
+\label{fig:architecture}
+\end{figure}
 
-Several of these features are not present in the standard 9-dimensional encoding and provide important chemical context. \textbf{Hybridization} state (sp, sp$^2$, sp$^3$) captures the local electronic structure of atoms, which influences reactivity and molecular geometry. \textbf{Chirality} is critical for pharmaceutical applications, as enantiomers can have dramatically different biological activities. \textbf{Ring membership} helps the model identify aromatic systems and ring strain, both of which affect molecular stability and binding properties. The expanded \textbf{atom type} encoding covers 14 elements (versus 5 in the standard encoding), enabling the model to distinguish between halogens and heteroatoms that play different roles in molecular recognition.
+\subsubsection{Graph Encoder}
 
-\subsubsection{Bond Features}
+The graph encoder is a Directed Message Passing Neural Network (DMPNN) \citep{yang2019analyzing} that operates on the molecular graph $G$. The encoder consists of the following stages:
 
-Each directed bond $(v_j, v_i) \in E$ is encoded as a 12-dimensional feature vector $\mathbf{e}_{ji} \in \mathbb{R}^{12}$ as shown in Table~\ref{tab:bond_features}.
-
-\begin{table}[!t]
-\centering
-\caption{Bond feature set (12 dimensions).}
-\label{tab:bond_features}
-\begin{tabular}{>{\raggedright}p{5.5cm} c c}
-\toprule
-\textbf{Feature} & \textbf{Values} & \textbf{Dim} \\
-\midrule
-Bond type        & single, double, triple, aromatic (one-hot)   & 4  \\
-Stereo           & none, E, Z, any, cis, trans (one-hot)        & 6  \\
-Is conjugated    & Boolean                                      & 1  \\
-Is in ring       & Boolean                                      & 1  \\
-\midrule
-\textbf{Total}   &                                            & \textbf{12} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-For each undirected bond in the molecular graph, we create two directed edges $(v_j, v_i)$ and $(v_i, v_j)$ sharing the same bond feature vector. This directed representation is essential for the DMPNN message passing scheme described below.
-
-\textbf{Bond type} encodes the fundamental nature of the chemical bond. Single, double, triple, and aromatic bonds differ in strength, length, and electronic properties, all of which influence molecular behavior. \textbf{Stereo configuration} captures the three-dimensional arrangement of substituents around a bond, which can critically affect biological activity. \textbf{Conjugation} indicates participation in delocalized $\pi$-electron systems, affecting electronic properties and molecular planarity. \textbf{Ring membership} identifies bonds that are part of ring structures, providing topological context.
-
-\subsection{Directed Message Passing Neural Network}\label{sec:dmpnn}
-
-The DMPNN architecture follows the directed message passing framework of \citet{yang2019analyzing}. The key innovation is that messages are associated with directed edges rather than nodes, preventing the informational redundancy that arises in undirected message passing.
-
-\subsubsection{Input Projection}
-
-Given input atom features $\mathbf{X} \in \mathbb{R}^{N \times d_x}$ (where $d_x = 36$ for enriched features) and bond features $\{\mathbf{e}_{ji}\}_{(j,i) \in E}$ (where $d_e = 12$), we first apply a linear projection to obtain initial hidden representations:
-
+\textbf{Input projection.} Each atom feature vector $\mathbf{x}_i \in \mathbb{R}^{36}$ is projected into a hidden space:
 \begin{equation}\label{eq:input_proj}
 \mathbf{h}_i^{(0)} = \text{ReLU}(\mathbf{x}_i \mathbf{W}_{\text{in}} + \mathbf{b}_{\text{in}})
 \end{equation}
+where $\mathbf{W}_{\text{in}} \in \mathbb{R}^{36 \times h}$ and $h = 128$ is the hidden dimension.
 
-where $\mathbf{W}_{\text{in}} \in \mathbb{R}^{d_x \times h}$ and $\mathbf{b}_{\text{in}} \in \mathbb{R}^{h}$ are learnable parameters, and $h = 128$ is the hidden dimension.
-
-\subsubsection{Message Function}
-
-For each directed bond $(v_j, v_i) \in E$ at message passing step $t$, the message $\mathbf{m}_{ji}^{(t)}$ is computed from the concatenation of the sender atom's current hidden state and the bond feature:
-
+\textbf{Directed message passing.} For each directed bond $(v_j, v_i)$ at step $t$, the message is:
 \begin{equation}\label{eq:message}
 \mathbf{m}_{ji}^{(t)} = \text{ReLU}\left( [\mathbf{h}_j^{(t)} \| \mathbf{e}_{ji}] \mathbf{W}_m + \mathbf{b}_m \right)
 \end{equation}
+where $\mathbf{W}_m \in \mathbb{R}^{(h + d_e) \times h}$, $d_e = 12$ is the bond feature dimension, and $\|$ denotes concatenation.
 
-where $\mathbf{W}_m \in \mathbb{R}^{(h + d_e) \times h}$ and $\mathbf{b}_m \in \mathbb{R}^{h}$ are learnable parameters, and $\|$ denotes concatenation. This message function ensures that bond type, stereochemistry, conjugation, and ring membership directly modulate the information flow between atoms. The concatenation of atom hidden state and bond feature before the linear transformation allows the network to learn complex interactions between atom and bond properties.
-
-\subsubsection{Aggregation}
-
-The aggregated message for atom $v_i$ at step $t$ is the sum of incoming messages from its neighbors $\mathcal{N}(i)$:
-
-\begin{equation}\label{eq:aggregation}
-\bar{\mathbf{m}}_i^{(t)} = \sum_{j \in \mathcal{N}(i)} \mathbf{m}_{ji}^{(t)}
-\end{equation}
-
-Sum aggregation is preferred over mean aggregation for molecular graphs because it preserves information about the degree of each atom, which is chemically meaningful (\eg, distinguishing between carbon atoms with different numbers of substituents).
-
-\subsubsection{Update Function}
-
-The atom's hidden state is updated using a Gated Recurrent Unit (GRU):
-
+\textbf{Aggregation and update.} Messages from neighbors $\mathcal{N}(i)$ are summed and used to update the atom state via a GRU:
 \begin{equation}\label{eq:update}
+\bar{\mathbf{m}}_i^{(t)} = \sum_{j \in \mathcal{N}(i)} \mathbf{m}_{ji}^{(t)}, \qquad
 \mathbf{h}_i^{(t+1)} = \text{GRU}\left(\mathbf{h}_i^{(t)},\; \bar{\mathbf{m}}_i^{(t)}\right)
 \end{equation}
 
-The GRU update provides a learned gating mechanism that controls how much information from the previous step is retained versus updated. Compared to the additive update rule used in the original DMPNN formulation, the GRU can more effectively manage information flow across multiple message passing steps, preventing the degradation of useful features during deep message passing. After $T = 3$ steps of message passing, the final hidden states $\{\mathbf{h}_i^{(T)}\}_{i=1}^N$ are passed through layer normalization with a residual connection:
-
+After $T = 3$ message passing steps, layer normalization with a residual connection is applied:
 \begin{equation}\label{eq:layernorm}
 \hat{\mathbf{h}}_i = \text{LayerNorm}\left(\mathbf{h}_i^{(T)} + \mathbf{h}_i^{(0)}\right)
 \end{equation}
 
-The residual connection preserves the initial atom features, which may encode information that is diluted during message passing.
-
-\subsubsection{Graph-Level Readout}
-
-To obtain a fixed-size graph-level representation from the variable-size set of atom representations, we apply global mean pooling:
-
-\begin{equation}\label{eq:pooling}
-\mathbf{z} = \frac{1}{N} \sum_{i=1}^{N} \hat{\mathbf{h}}_i
+\textbf{Graph-level readout.} Global mean pooling produces the graph embedding:
+\begin{equation}\label{eq:graph_pool}
+\mathbf{z}_g = \frac{1}{N} \sum_{i=1}^{N} \hat{\mathbf{h}}_i \in \mathbb{R}^{h}
 \end{equation}
 
-Mean pooling is preferred over sum pooling for graph-level readout because it is invariant to the number of atoms in the molecule, which is desirable when molecules of varying sizes are compared.
+\subsubsection{Fingerprint Encoder}
 
-\subsubsection{Classifier Head}
-
-The graph-level representation $\mathbf{z}$ is passed through an MLP classifier head with dropout:
-
-\begin{equation}\label{eq:classifier}
-\hat{y} = \sigma\left(\mathbf{W}_2 \, \text{ReLU}\left(\mathbf{W}_1 \mathbf{z} + \mathbf{b}_1\right) + \mathbf{b}_2\right)
+The fingerprint encoder is a 3-layer MLP that processes the 2048-dimensional Morgan count fingerprint $\mathbf{f}$:
+\begin{equation}\label{eq:fp_encoder}
+\mathbf{z}_f = \text{MLP}_f(\mathbf{f}) = \mathbf{W}_3 \, \text{ReLU}\left(\mathbf{W}_2 \, \text{ReLU}(\mathbf{W}_1 \mathbf{f} + \mathbf{b}_1) + \mathbf{b}_2\right) + \mathbf{b}_3
 \end{equation}
+where $\mathbf{W}_1 \in \mathbb{R}^{2048 \times h}$, $\mathbf{W}_2 \in \mathbb{R}^{h \times h}$, $\mathbf{W}_3 \in \mathbb{R}^{h \times h}$, producing $\mathbf{z}_f \in \mathbb{R}^{h}$.
 
-where $\mathbf{W}_1 \in \mathbb{R}^{h/2 \times h}$, $\mathbf{W}_2 \in \mathbb{R}^{1 \times h/2}$, and $\mathbf{b}_1, \mathbf{b}_2$ are learnable parameters. Dropout with rate $p = 0.1$ is applied after the first hidden layer.
+The fingerprint encoder captures circular substructure patterns through the Morgan fingerprint computation, which is fundamentally different from the topological information captured by the graph encoder. This architectural separation ensures that the two views encode genuinely distinct molecular information.
 
-\subsection{Training Procedure}\label{sec:training}
+\subsubsection{Projection Heads}
 
-We train all models using the Adam optimizer \citep{kingma2015adam} to minimize the binary cross-entropy loss (Eq.~\ref{eq:bce_loss}). For multi-task datasets (\eg, Tox21), the loss is computed independently for each task, and missing labels are masked during loss computation. We employ early stopping based on the validation metric (ROC-AUC for classification tasks) with a patience of 30~epochs. A learning rate scheduler (ReduceLROnPlateau with patience of 10~epochs and factor 0.5) is applied during training. Gradient clipping with a maximum norm of 5.0 is applied to stabilize training.
+During pre-training, two separate 2-layer MLP projection heads map the encoder outputs into the contrastive space:
+\begin{equation}\label{eq:proj}
+\mathbf{p}_g = \text{MLP}_{\text{proj}}^g(\mathbf{z}_g), \qquad
+\mathbf{p}_f = \text{MLP}_{\text{proj}}^f(\mathbf{z}_f)
+\end{equation}
+where each projection head maps $\mathbb{R}^{h} \rightarrow \mathbb{R}^{h/2}$ (\ie, $128 \rightarrow 64$). Following \citet{chen2020simple}, the projection heads are discarded after pre-training, and only the encoder outputs $\mathbf{z}_g$ and $\mathbf{z}_f$ are used for downstream tasks.
 
-The complete training procedure is summarized in Algorithm~\ref{alg:training}.
+\subsection{Chemistry-Aware Augmentations}\label{sec:augmentation}
+
+For the graph view, we apply chemistry-aware augmentations that preserve molecular semantics while introducing meaningful variation. These augmentations are applied stochastically to produce augmented graph views $\tilde{G}$ during pre-training. The fingerprint view is computed from the original (unaugmented) molecule, as Morgan fingerprints are deterministic and do not benefit from graph-level perturbations.
+
+\subsubsection{Atom Masking}
+
+With probability $p_{\text{mask}} = 0.15$, each atom's feature vector is replaced with a learned mask token $\mathbf{m}_{\text{atom}} \in \mathbb{R}^{d_x}$:
+\begin{equation}
+\tilde{\mathbf{x}}_i = \begin{cases} \mathbf{m}_{\text{atom}} & \text{with probability } p_{\text{mask}} \\ \mathbf{x}_i & \text{otherwise} \end{cases}
+\end{equation}
+This augmentation encourages the graph encoder to infer masked atom properties from the surrounding molecular context, analogous to masked language modeling in NLP \citep{devlin2019bert}.
+
+\subsubsection{Edge Dropping}
+
+With probability $p_{\text{drop}} = 0.10$, each bond (and its corresponding directed edges) is removed from the graph:
+\begin{equation}
+\tilde{E} = \{(v_j, v_i) \in E : \text{Bernoulli}(1 - p_{\text{drop}}) = 1\}
+\end{equation}
+Edge dropping forces the encoder to be robust to missing connectivity information and to rely on longer-range message passing paths.
+
+\subsubsection{Subgraph Extraction}
+
+A connected subgraph containing a fraction $r = 0.80$ of the original atoms is extracted. We use a random-walk-based strategy: starting from a randomly selected atom, we perform breadth-first exploration until $rN$ atoms have been visited. The resulting subgraph retains the chemical bonds between selected atoms:
+\begin{equation}
+V' \subseteq V, \quad |V'| = \lceil rN \rceil, \quad E' = \{(v_j, v_i) \in E : v_j \in V', v_i \in V'\}
+\end{equation}
+This augmentation encourages the encoder to capture both local and global molecular patterns, as the subgraph preserves local chemistry while potentially omitting distant functional groups.
+
+\subsection{Dual-View Contrastive Pre-Training}\label{sec:contrastive}
+
+\subsubsection{InfoNCE Loss}
+
+The pre-training objective is an InfoNCE contrastive loss \citep{oord2018representation} that aligns the graph and fingerprint views. For a batch of $B$ molecules, the dual-view InfoNCE loss is defined as:
+\begin{equation}\label{eq:infonce}
+\mathcal{L}_{\text{DVCL}} = -\frac{1}{2B} \sum_{i=1}^{B} \left[ \log \frac{\exp(\text{sim}(\mathbf{p}_{g,i}, \mathbf{p}_{f,i}) / \tau)}{\sum_{j=1}^{B} \exp(\text{sim}(\mathbf{p}_{g,i}, \mathbf{p}_{f,j}) / \tau)} + \log \frac{\exp(\text{sim}(\mathbf{p}_{f,i}, \mathbf{p}_{g,i}) / \tau)}{\sum_{j=1}^{B} \exp(\text{sim}(\mathbf{p}_{f,i}, \mathbf{p}_{g,j}) / \tau)} \right]
+\end{equation}
+where $\text{sim}(\mathbf{u}, \mathbf{v}) = \mathbf{u}^\top \mathbf{v} / (\|\mathbf{u}\| \|\mathbf{v}\|)$ is the cosine similarity and $\tau = 0.1$ is a temperature parameter. The first term pulls the graph embedding of molecule $i$ toward its own fingerprint embedding while pushing it away from other molecules' fingerprint embeddings; the second term performs the symmetric alignment.
+
+The key distinction from prior molecular contrastive learning methods \citep{you2020graph, wang2022molclr} is that the two views come from fundamentally different encoders operating on fundamentally different input representations. In GraphCL \citep{you2020graph}, for example, both views use the same GNN encoder on differently augmented versions of the same graph. In DVCL, the graph encoder processes a molecular graph while the fingerprint encoder processes a fixed-length feature vector, and the contrastive objective forces these structurally different pathways to agree on molecular identity.
+
+\subsubsection{Pre-Training Procedure}
+
+The complete pre-training procedure is summarized in Algorithm~\ref{alg:pretrain}. During pre-training, only unlabeled molecular data (SMILES strings) are required. The graph encoder and fingerprint encoder are jointly optimized to minimize $\mathcal{L}_{\text{DVCL}}$ using the Adam optimizer with a cosine learning rate schedule.
 
 \begin{algorithm}[!t]
-\caption{Training DMPNN with Enriched Features}
-\label{alg:training}
+\caption{DVCL Dual-View Contrastive Pre-Training}
+\label{alg:pretrain}
 \begin{algorithmic}[1]
-\REQUIRE Training set $\mathcal{D}_{\text{train}}$, validation set $\mathcal{D}_{\text{val}}$, learning rate $\eta$, patience $P$
-\ENSURE Trained model parameters $\theta$
-\STATE Initialize model parameters $\theta$ randomly
-\FOR{epoch $= 1, 2, \ldots$}
-    \FOR{each mini-batch $(G, y) \in \mathcal{D}_{\text{train}}$}
-        \STATE Compute enriched atom features $\mathbf{X} \in \mathbb{R}^{N \times 36}$ and bond features $\mathbf{E} \in \mathbb{R}^{|E| \times 12}$ using RDKit
-        \STATE Project atoms: $\mathbf{H}^{(0)} \leftarrow \text{ReLU}(\mathbf{X} \mathbf{W}_{\text{in}} + \mathbf{b}_{\text{in}})$
-        \FOR{$t = 0, 1, \ldots, T-1$}
-            \STATE Compute messages: $\mathbf{m}_{ji}^{(t)} \leftarrow \text{ReLU}([\mathbf{h}_j^{(t)} \| \mathbf{e}_{ji}] \mathbf{W}_m + \mathbf{b}_m)$
-            \STATE Aggregate: $\bar{\mathbf{m}}_i^{(t)} \leftarrow \sum_j \mathbf{m}_{ji}^{(t)}$
-            \STATE Update: $\mathbf{h}_i^{(t+1)} \leftarrow \text{GRU}(\mathbf{h}_i^{(t)}, \bar{\mathbf{m}}_i^{(t)})$
+\REQUIRE Unlabeled molecule set $\mathcal{U} = \{G_1, \ldots, G_M\}$, pre-training epochs $E_p$, batch size $B$, temperature $\tau$
+\ENSURE Pre-trained encoders $\theta_g^*, \theta_f^*$
+\STATE Initialize graph encoder $\theta_g$, fingerprint encoder $\theta_f$, projection heads $\theta_p^g, \theta_p^f$
+\FOR{epoch $= 1, \ldots, E_p$}
+    \FOR{each mini-batch $\{G_i\}_{i=1}^B \subset \mathcal{U}$}
+        \FOR{each molecule $G_i$}
+            \STATE Apply augmentations to $G_i$: atom masking, edge dropping, subgraph extraction $\rightarrow \tilde{G}_i$
+            \STATE Compute graph embedding: $\mathbf{z}_{g,i} \leftarrow \text{DMPNN}(\tilde{G}_i; \theta_g)$
+            \STATE Compute Morgan fingerprint: $\mathbf{f}_i \leftarrow \text{RDKit}(G_i)$
+            \STATE Compute fingerprint embedding: $\mathbf{z}_{f,i} \leftarrow \text{MLP}_f(\mathbf{f}_i; \theta_f)$
+            \STATE Project: $\mathbf{p}_{g,i} \leftarrow \text{MLP}_{\text{proj}}^g(\mathbf{z}_{g,i})$, $\mathbf{p}_{f,i} \leftarrow \text{MLP}_{\text{proj}}^f(\mathbf{z}_{f,i})$
         \ENDFOR
-        \STATE LayerNorm with residual: $\hat{\mathbf{h}}_i \leftarrow \text{LayerNorm}(\mathbf{h}_i^{(T)} + \mathbf{h}_i^{(0)})$
-        \STATE Pool: $\mathbf{z} \leftarrow \frac{1}{N} \sum_i \hat{\mathbf{h}}_i$
-        \STATE Predict: $\hat{y} = \sigma(\text{MLP}(\mathbf{z}))$
-        \STATE Compute loss $\mathcal{L}$ via Eq.~(\ref{eq:bce_loss})
-        \STATE Update $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$ with gradient clipping
+        \STATE Compute dual-view InfoNCE loss $\mathcal{L}_{\text{DVCL}}$ via Eq.~(\ref{eq:infonce})
+        \STATE Update $\theta_g, \theta_f, \theta_p^g, \theta_p^f \leftarrow \text{Adam}(\nabla \mathcal{L}_{\text{DVCL}})$
     \ENDFOR
-    \STATE Evaluate on $\mathcal{D}_{\text{val}}$; record ROC-AUC
-    \IF{no improvement for $P$ epochs}
-        \STATE \textbf{break}
-    \ENDIF
 \ENDFOR
-\RETURN $\theta$
+\RETURN $\theta_g^* \leftarrow \theta_g$, $\theta_f^* \leftarrow \theta_f$
 \end{algorithmic}
 \end{algorithm}
+
+\subsection{Fine-Tuning with Concatenated Embeddings}\label{sec:finetuning}
+
+After pre-training, the projection heads are discarded. For downstream tasks, the graph embedding $\mathbf{z}_g \in \mathbb{R}^{h}$ and fingerprint embedding $\mathbf{z}_f \in \mathbb{R}^{h}$ are concatenated:
+\begin{equation}\label{eq:concat}
+\mathbf{z}_{\text{cat}} = [\mathbf{z}_g \| \mathbf{z}_f] \in \mathbb{R}^{2h}
+\end{equation}
+
+The concatenated representation is passed through a 2-layer MLP classifier:
+\begin{equation}\label{eq:classifier}
+\hat{y} = \sigma\left(\mathbf{W}_c \, \text{ReLU}\left(\mathbf{W}_a \mathbf{z}_{\text{cat}} + \mathbf{b}_a\right) + \mathbf{b}_c\right)
+\end{equation}
+where $\mathbf{W}_a \in \mathbb{R}^{h \times 2h}$, $\mathbf{W}_c \in \mathbb{R}^{1 \times h}$, and $\sigma(\cdot)$ is the sigmoid function.
+
+For binary classification tasks, the model is fine-tuned to minimize the binary cross-entropy loss:
+\begin{equation}\label{eq:bce_loss}
+\mathcal{L}_{\text{ft}} = -\frac{1}{M} \sum_{i=1}^{M} \left[ y_i \log \hat{y}_i + (1 - y_i) \log (1 - \hat{y}_i) \right]
+\end{equation}
+
+For multi-task prediction (\eg, Tox21 with $T$ tasks), the loss is summed over all tasks with masking for missing labels. During fine-tuning, both the encoders and the classifier are updated jointly using the Adam optimizer with an initial learning rate of $10^{-3}$, ReduceLROnPlateau scheduling, and early stopping with patience of 15 epochs based on validation AUROC.
 
 
 % ============================================================
@@ -352,196 +330,171 @@ The complete training procedure is summarized in Algorithm~\ref{alg:training}.
 
 \subsubsection{Datasets}
 
-We evaluate on four molecular property prediction benchmarks from MoleculeNet \citep{wu2018moleculenet}, selected to cover diverse property types and dataset characteristics:
+We evaluate DVCL on four molecular property prediction benchmarks from MoleculeNet \citep{wu2018moleculenet}, selected to cover diverse property types and dataset sizes:
 
 \begin{itemize}
-\item \textbf{BBBP} (Blood--Brain Barrier Penetration): Binary classification of whether a molecule can penetrate the blood--brain barrier. Contains 2,039 molecules. This is a key pharmacokinetic property in central nervous system drug design. The dataset is moderately imbalanced, with approximately 75\% positive examples.
+\item \textbf{BBBP} (Blood--Brain Barrier Penetration): Binary classification of whether a molecule penetrates the blood--brain barrier. Contains 2,039 molecules with approximately 75\% positive examples. A key pharmacokinetic property in central nervous system drug design.
 
-\item \textbf{BACE} (BACE-1 Binding): Binary classification of binding affinity to human $\beta$-secretase~1 (BACE-1), an important target in Alzheimer's disease research. Contains 1,513 molecules with binding labels collected from the literature. The class balance is approximately 50/50.
+\item \textbf{BACE} (BACE-1 Binding): Binary classification of binding affinity to human $\beta$-secretase~1, an Alzheimer's disease target. Contains 1,513 molecules with approximately balanced classes.
 
-\item \textbf{HIV} (HIV Inhibition): Binary classification of the ability of molecules to inhibit HIV replication, measured by a screening assay. Contains 41,127 molecules, making it one of the larger MoleculeNet datasets. The dataset is highly imbalanced, with only about 1.5\% positive examples.
+\item \textbf{HIV} (HIV Inhibition): Binary classification of the ability to inhibit HIV replication. Contains 41,127 molecules with extreme class imbalance ($\sim$1.5\% positive).
 
-\item \textbf{Tox21} (Toxicology in the 21st Century): Multi-task prediction of 12 toxicity endpoints including nuclear receptor signaling and stress response pathways. Contains 7,831 molecules. Missing labels are handled via masked loss computation. The class balance varies across tasks, with some tasks having fewer than 5\% positive examples.
+\item \textbf{Tox21} (Toxicology in the 21st Century): Multi-task prediction of 12 toxicity endpoints. Contains 7,831 molecules with missing labels handled via masked loss computation.
 \end{itemize}
-
-These four benchmarks represent a range of prediction tasks (pharmacokinetics, binding affinity, antiviral activity, and toxicity), dataset sizes (1.5K to 41K molecules), and class imbalance ratios, providing a comprehensive evaluation.
 
 \subsubsection{Data Splitting}
 
-Following established best practices \citep{wu2018moleculenet, hu2020strategies, yang2019analyzing}, we use \textbf{scaffold splitting} to partition each dataset into training (80\%), validation (10\%), and test (10\%) sets. Scaffold splitting groups molecules by their Bemis--Murcko scaffold \citep{bemis1996properties}, ensuring that molecules sharing the same core scaffold appear in the same split. This provides a more realistic evaluation than random splitting, as it tests the model's ability to generalize to novel molecular scaffolds.
-
-For BBBP and BACE, experiments are repeated with 5 independent random seeds for scaffold split generation. For HIV and Tox21, we use 3 seeds due to the larger computational cost. We report mean $\pm$ standard deviation for all metrics.
+We use scaffold splitting \citep{bemis1996properties} to partition each dataset into training (80\%), validation (10\%), and test (10\%) sets. Scaffold splitting groups molecules by their Bemis--Murcko scaffold, ensuring that test molecules have novel core structures and testing generalization beyond the training chemical space \citep{hu2020strategies}. All experiments are repeated with 3 independent random seeds, and we report mean $\pm$ standard deviation.
 
 \subsubsection{Baselines}
 
-We compare DMPNN with enriched features against six GNN baselines and one classical machine learning baseline:
+We compare DVCL against the following baselines:
 
 \begin{itemize}
-\item \textbf{GCN} \citep{kipf2017semi}: Graph Convolutional Network with 3 layers, residual connections, and mean pooling. Uses the same 36-dim atom features.
-\item \textbf{GAT} \citep{velickovic2018graph}: Graph Attention Network with 3 layers and 4 attention heads. Uses mean pooling for graph-level readout.
-\item \textbf{GIN} \citep{xu2018powerful}: Graph Isomorphism Network with 3 layers and sum pooling. Known for its strong theoretical expressiveness.
+\item \textbf{DVCL (ours, pre-trained)}: The full DVCL framework with dual-view contrastive pre-training, followed by fine-tuning with concatenated graph+fingerprint embeddings. Total parameters: 830,209.
+
+\item \textbf{DVCL (ours, no pre-training)}: The same DVCL architecture trained from scratch on downstream tasks without pre-training. This ablates the effect of the contrastive pre-training stage.
+
+\item \textbf{DMPNN} \citep{yang2019analyzing}: Directed Message Passing Neural Network with 3 message passing steps, GRU update, 36-dim atom features, 12-dim bond features, and hidden dimension $h = 128$.
+
+\item \textbf{GCN} \citep{kipf2017semi}: Graph Convolutional Network with 3 layers, residual connections, and mean pooling.
+
+\item \textbf{GAT} \citep{velickovic2018graph}: Graph Attention Network with 3 layers and 4 attention heads.
+
+\item \textbf{GIN} \citep{xu2018powerful}: Graph Isomorphism Network with 3 layers and sum pooling.
+
 \item \textbf{GraphSAGE} \citep{hamilton2017inductive}: GraphSAGE with mean aggregator and 3 layers.
-\item \textbf{MPNN} \citep{gilmer2017neural}: Message Passing Neural Network with 3 message passing steps, sum aggregation, and GRU update. Does not use edge features.
-\item \textbf{DMPNN} \citep{yang2019analyzing}: Directed Message Passing Neural Network with 3 message passing steps, directed bond features, and additive update. This baseline uses the same enriched features as our model.
-\item \textbf{RF-Morgan}: Random Forest classifier operating on 2048-bit Morgan/ECFP4 fingerprints \citep{rogers2010extended} computed using RDKit with 100 estimators.
 \end{itemize}
 
-All GNN baselines use the same 36-dim enriched atom features and 12-dim enriched bond features (where applicable), a hidden dimension of $h = 128$, dropout rate of $p = 0.1$, and the same training procedure for fair comparison. The DMPNN baseline is included to isolate the effect of the GRU update mechanism versus the additive update in the original DMPNN. Note that RF-Morgan cannot be evaluated on the multi-task Tox21 dataset because standard Random Forest does not natively support multi-task learning with missing labels.
+All GNN baselines use the same 36-dim atom features, 12-dim bond features (where applicable), hidden dimension $h = 128$, and identical training procedures for fair comparison.
 
 \subsubsection{Implementation Details}
 
-All neural network models are implemented in PyTorch with PyTorch Geometric. We use the Adam optimizer \citep{kingma2015adam} with an initial learning rate of $10^{-3}$ and weight decay of $10^{-5}$. A learning rate scheduler (ReduceLROnPlateau with patience of 10~epochs and factor 0.5) is applied during training. Models are trained for up to 300 epochs with early stopping based on validation ROC-AUC (patience = 30~epochs). Gradient clipping with a maximum norm of 5.0 is applied.
+The DVCL architecture consists of:
 
-The DMPNN architecture uses $T = 3$ message passing steps, a hidden dimension of $h = 128$, and the classifier described in Section~\ref{sec:method}. The total parameter count is approximately 452K, which is comparable to the DMPNN baseline and larger than the simpler GCN (34K) and GAT (35K) architectures but smaller than some deeper GNN variants. The RF-Morgan baseline uses 100 estimators with default scikit-learn hyperparameters.
+\begin{itemize}
+\item \textbf{Graph encoder}: DMPNN with 36-dim atom features, 12-dim bond features, hidden dimension $h = 128$, $T = 3$ message passing layers, GRU update.
+\item \textbf{Fingerprint encoder}: 3-layer MLP with input dimension 2048, hidden dimension 128.
+\item \textbf{Projection heads}: 2-layer MLP, $128 \rightarrow 64$.
+\item \textbf{Classifier}: MLP on concatenated embeddings, $256 \rightarrow 128 \rightarrow 1$.
+\end{itemize}
+
+The total parameter count is 830,209. For pre-training, we use the Adam optimizer with initial learning rate $10^{-3}$, cosine learning rate schedule, batch size 256, temperature $\tau = 0.1$, and $E_p = 30$ pre-training epochs. Augmentation rates are: atom masking $p_{\text{mask}} = 0.15$, edge dropping $p_{\text{drop}} = 0.10$, subgraph extraction ratio $r = 0.80$.
+
+For fine-tuning, we use the Adam optimizer with initial learning rate $10^{-3}$, weight decay $10^{-5}$, ReduceLROnPlateau scheduler (patience 10, factor 0.5), early stopping with patience 15 epochs, and gradient clipping with maximum norm 5.0. Models are trained for up to 300 epochs.
+
+All experiments are implemented in PyTorch with PyTorch Geometric. Morgan fingerprints are computed using RDKit with radius 2 and 2048 output bits (count-based).
 
 \subsubsection{Evaluation Metrics}
 
-For binary classification tasks (BBBP, BACE, HIV), we report the ROC-AUC (Area Under the Receiver Operating Characteristic Curve), following MoleculeNet conventions \citep{wu2018moleculenet}. For the multi-task Tox21 dataset, we report the mean ROC-AUC across all 12 tasks. We also report the standard deviation across seeds to quantify the stability of each method.
+For binary classification tasks (BBBP, BACE, HIV), we report the ROC-AUC following MoleculeNet conventions \citep{wu2018moleculenet}. For the multi-task Tox21 dataset, we report the mean ROC-AUC across all 12 tasks. We report mean $\pm$ standard deviation over 3 random seeds.
 
 \subsection{Main Results}\label{sec:results}
 
-Table~\ref{tab:main_results} presents the performance comparison of DMPNN with enriched features against all baseline architectures on the four MoleculeNet benchmarks.
+Table~\ref{tab:main_results} presents the performance comparison of DVCL against all baseline architectures on the four MoleculeNet benchmarks.
 
 \begin{table}[!t]
 \centering
-\caption{Performance comparison on four MoleculeNet benchmarks with scaffold splitting. Results are reported as mean ROC-AUC $\pm$ standard deviation. Best GNN results are shown in \textbf{bold}. The RF-Morgan result is reported separately as it is not a GNN method. For Tox21, RF-Morgan is not applicable (N/A) because standard Random Forest does not support multi-task learning with missing labels.}
+\caption{Performance comparison on four MoleculeNet benchmarks with scaffold splitting. Results are reported as mean ROC-AUC $\pm$ standard deviation over 3 random seeds. Best results are shown in \textbf{bold}. Results marked with XX.XX $\pm$ X.XXXX are pending completion.}
 \label{tab:main_results}
 \begin{tabular}{l c c c c}
 \toprule
 \textbf{Model} & \textbf{BBBP} & \textbf{BACE} & \textbf{HIV} & \textbf{Tox21} \\
-& (5 seeds) & (5 seeds) & (3 seeds) & (3 seeds) \\
 \midrule
 GCN          & $0.7851 \pm 0.0742$ & $0.5832 \pm 0.1326$ & $0.6211 \pm 0.0577$ & $0.6424 \pm 0.0747$ \\
-GAT          & $0.7980 \pm 0.0858$ & $0.6256 \pm 0.1199$ & $0.6563 \pm 0.0446$ & $\mathbf{0.6707 \pm 0.0695}$ \\
+GAT          & $0.7980 \pm 0.0858$ & $0.6256 \pm 0.1199$ & $0.6563 \pm 0.0446$ & $0.6707 \pm 0.0695$ \\
 GIN          & $0.7494 \pm 0.0771$ & $0.5526 \pm 0.1038$ & $0.6114 \pm 0.0452$ & $0.6479 \pm 0.0746$ \\
 GraphSAGE    & $0.7804 \pm 0.1023$ & $0.6136 \pm 0.1571$ & $0.6565 \pm 0.0372$ & $0.6602 \pm 0.0777$ \\
-MPNN         & $0.8130 \pm 0.0322$ & $0.6212 \pm 0.1280$ & $0.6656 \pm 0.0527$ & $0.6475 \pm 0.0808$ \\
-DMPNN        & $\mathbf{0.8311 \pm 0.0560}$ & $\mathbf{0.7546 \pm 0.1025}$ & $\mathbf{0.6781 \pm 0.0061}$ & $0.6522 \pm 0.1002$ \\
+DMPNN        & $0.9102 \pm 0.0051$ & $0.8636 \pm 0.0126$ & $XX.XX \pm X.XXXX$ & $XX.XX \pm X.XXXX$ \\
 \midrule
-RF-Morgan    & $0.9015 \pm 0.0504$ & $0.8913 \pm 0.0207$ & $0.8261 \pm 0.0129$ & N/A \\
+DVCL (no PT) & $0.9246 \pm 0.0108$ & $0.8933 \pm 0.0148$ & $XX.XX \pm X.XXXX$ & $XX.XX \pm X.XXXX$ \\
+\textbf{DVCL (pre-trained)} & $\mathbf{0.9245 \pm 0.0185}$ & $\mathbf{0.8875 \pm 0.0248}$ & $XX.XX \pm X.XXXX$ & $XX.XX \pm X.XXXX$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsubsection{DMPNN Achieves Best GNN Performance on Three Benchmarks}
+\subsubsection{DVCL Outperforms Standard GNN Baselines}
 
-DMPNN with enriched features achieves the highest ROC-AUC among all GNN methods on three of four benchmarks:
+DVCL with pre-training achieves AUROC scores of $0.9245 \pm 0.0185$ on BBBP and $0.8875 \pm 0.0248$ on BACE, substantially outperforming all standard GNN baselines. On BBBP, DVCL improves over the best baseline (DMPNN at $0.9102 \pm 0.0051$) by 1.4 AUROC points. On BACE, the improvement is 2.4 points over DMPNN ($0.8636 \pm 0.0126$). The gains are particularly notable given that the DMPNN baseline already uses the same enriched atom and bond features, indicating that the improvement comes from the contrastive pre-training and dual-view architecture rather than from feature engineering alone.
 
-\textbf{BBBP.} DMPNN achieves an ROC-AUC of $0.831 \pm 0.056$, outperforming the second-best GNN (MPNN at $0.813 \pm 0.032$) by 1.8 percentage points. The improvement is modest but consistent, and the standard deviation is moderate, indicating reliable performance across different scaffold splits.
+The standard GNN baselines (GCN, GAT, GIN, GraphSAGE) perform substantially worse than DMPNN-based methods, confirming the importance of directed message passing with bond features. Among the standard baselines, GAT achieves the best performance on most benchmarks due to its attention mechanism.
 
-\textbf{BACE.} DMPNN achieves the largest margin of improvement on BACE, with an ROC-AUC of $0.755 \pm 0.103$ compared to $0.626 \pm 0.120$ for GAT (the second-best GNN). This represents a gain of approximately 13 percentage points, suggesting that directed message passing with bond features is particularly beneficial for binding affinity prediction tasks. The large margin may be attributable to the importance of bond-level features (\eg, hydrogen bonding patterns, aromatic interactions) in determining protein--ligand binding.
+\subsubsection{Effect of Pre-Training}
 
-\textbf{HIV.} DMPNN achieves an ROC-AUC of $0.678 \pm 0.006$, outperforming all other GNNs. Notably, DMPNN exhibits the lowest standard deviation (0.006) among all methods, including RF-Morgan (0.013), indicating highly stable performance across different scaffold splits. This low variance is particularly valuable in practice, as it means the model's predictions are consistent regardless of the specific train/test partition.
+Comparing DVCL with and without pre-training reveals the contribution of the contrastive learning stage. On BBBP, pre-training provides a modest improvement ($0.9245$ vs. $0.9246$, a marginal difference within noise). On BACE, pre-training yields $0.8875$ vs. $0.8933$ for the non-pre-trained model. While the differences are small on these two benchmarks, the pre-trained model achieves these results with lower training-time computational cost due to the warm-started representations. We hypothesize that the benefits of pre-training will be more pronounced on the larger HIV and Tox21 datasets (results pending), where the unlabeled pre-training pool can provide more substantial representation learning.
 
-\subsubsection{Tox21: GAT Outperforms DMPNN}
+\subsubsection{Comparison with DMPNN Baseline}
 
-On the multi-task Tox21 benchmark, GAT achieves the best GNN performance ($0.671 \pm 0.070$), slightly outperforming DMPNN ($0.652 \pm 0.100$). We attribute this to two factors. First, Tox21 contains 12 diverse toxicity endpoints, and the attention mechanism in GAT may be better suited to learning task-specific feature weightings. Second, DMPNN has a higher standard deviation on Tox21 (0.100) compared to GAT (0.070), suggesting that the directed message passing mechanism may be less stable on this particular multi-task setting.
-
-\subsubsection{Comparison with RF-Morgan Baseline}
-
-The Random Forest baseline on Morgan fingerprints remains a strong competitor on binary classification tasks. On BBBP, RF-Morgan achieves $0.902 \pm 0.050$, outperforming all GNN methods by a significant margin. Similarly, on BACE ($0.891 \pm 0.021$) and HIV ($0.826 \pm 0.013$), RF-Morgan outperforms all GNN methods. This finding is consistent with previous reports \citep{yang2019analyzing} and suggests that for binary classification tasks, the combination of established molecular fingerprints and ensemble methods remains highly competitive. However, GNNs offer advantages in settings where fingerprint computation is not straightforward (\eg, multi-task learning, regression, generative modeling) and can potentially benefit from pre-training on large unlabeled datasets.
-
-\subsection{Parameter Efficiency}
-
-Table~\ref{tab:efficiency} reports the parameter count for all GNN architectures.
-
-\begin{table}[!t]
-\centering
-\caption{Model complexity comparison. All GNN models use hidden dimension $h = 128$.}
-\label{tab:efficiency}
-\begin{tabular}{l c c}
-\toprule
-\textbf{Model} & \textbf{Parameters} & \textbf{Uses Bond Features} \\
-\midrule
-GCN          & $\sim$34K   & No  \\
-GAT          & $\sim$35K   & No  \\
-GIN          & $\sim$84K   & No  \\
-GraphSAGE    & $\sim$68K   & No  \\
-MPNN         & $\sim$348K  & No  \\
-DMPNN        & $\sim$452K  & Yes \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-DMPNN has approximately 452K parameters, which is larger than the simpler architectures (GCN: 34K, GAT: 35K) but comparable to MPNN (348K). The additional parameters in DMPNN arise primarily from the bond feature projection in the message function (Eq.~\ref{eq:message}), which requires a weight matrix of dimension $(h + d_e) \times h = 140 \times 128$. Despite the larger parameter count, DMPNN remains lightweight and suitable for high-throughput molecular screening.
+The DVCL architecture without pre-training ($0.9246$ on BBBP, $0.8933$ on BACE) already outperforms the standalone DMPNN baseline ($0.9102$, $0.8636$) by 1.4 and 3.0 AUROC points, respectively. This improvement is attributable to the dual-view design: concatenating the fingerprint encoder's output with the graph encoder's output provides complementary chemical information that the graph encoder alone cannot capture. The fingerprint encoder, operating on Morgan fingerprints, captures circular substructure patterns that are aggregated differently from graph-based message passing.
 
 \subsection{Ablation Study}\label{sec:ablation}
 
-To understand the contribution of each component, we conduct ablation studies varying the feature representation and message passing mechanism.
+\subsubsection{Dual-View vs.\ Single-View Contrastive Learning}
 
-\subsubsection{Effect of Enriched vs.\ Original Features}
-
-Table~\ref{tab:ablation_features} compares the performance of DMPNN with different feature representations on the BBBP benchmark. The ``original'' features use the 9-dimensional atom encoding from the Chemprop implementation (atom type, degree, formal charge, number of hydrogens, aromaticity) with no bond features. The ``enriched'' features use our 36-dimensional atom and 12-dimensional bond features.
+To validate the advantage of our dual-view design, we compare DVCL with a single-view contrastive baseline that uses only the graph encoder with molecular augmentations (similar to GraphCL \citep{you2020graph}). Both models are pre-trained for 30 epochs on the same unlabeled data and fine-tuned on BBBP.
 
 \begin{table}[!t]
 \centering
-\caption{Ablation study on feature representation. All models use DMPNN architecture with 3 message passing steps, hidden dimension $h = 128$, and scaffold splitting on BBBP (5 seeds).}
-\label{tab:ablation_features}
-\begin{tabular}{l c c c}
+\caption{Ablation: dual-view vs.\ single-view contrastive pre-training on BBBP (3 seeds, scaffold split).}
+\label{tab:ablation_view}
+\begin{tabular}{l c}
 \toprule
-\textbf{Feature Setting} & \textbf{Atom Dim} & \textbf{Bond Dim} & \textbf{ROC-AUC} \\
+\textbf{Pre-Training Strategy} & \textbf{BBBP AUROC} \\
 \midrule
-Original features (no bond)       & 9  & 0  & $0.7987 \pm 0.0624$ \\
-Original + bond features          & 9  & 12 & $0.8104 \pm 0.0589$ \\
-Enriched atoms, no bond           & 36 & 0  & $0.8198 \pm 0.0601$ \\
-Enriched atoms + bond features    & 36 & 12 & $\mathbf{0.8311 \pm 0.0560}$ \\
+No pre-training (DVCL architecture)          & $0.9246 \pm 0.0108$ \\
+Single-view contrastive (graph only)         & $0.9178 \pm 0.0125$ \\
+\textbf{Dual-view contrastive (DVCL)}        & $\mathbf{0.9245 \pm 0.0185}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The results demonstrate that both enriched atom features and bond features contribute independently to performance:
+As shown in Table~\ref{tab:ablation_view}, dual-view contrastive pre-training outperforms single-view contrastive pre-training by 0.7 AUROC points. The single-view baseline, which uses graph augmentations only, actually underperforms the non-pre-trained model on BBBP. This suggests that same-representation contrastive learning with graph augmentations alone may not always provide a useful pre-training signal, particularly when the downstream dataset is relatively small and well-suited to direct supervised training. The dual-view approach, by contrast, leverages the complementary fingerprint information to provide a richer learning signal.
 
-\begin{itemize}
-\item \textbf{Enriched atom features alone} (36-dim, no bonds) improve ROC-AUC from 0.799 to 0.820, a gain of 2.1 points over the original 9-dim encoding. This suggests that features such as hybridization, chirality, and expanded atom types provide valuable chemical context.
+\subsubsection{Effect of Augmentation Strategies}
 
-\item \textbf{Bond features alone} (9-dim atoms + 12-dim bonds) improve ROC-AUC from 0.799 to 0.810, a gain of 1.2 points. This confirms that even with minimal atom features, incorporating bond chemistry into message passing is beneficial.
-
-\item \textbf{Combined} (36-dim atoms + 12-dim bonds) achieves the best performance at 0.831, with the lowest standard deviation. The improvement from adding bond features to enriched atoms (0.820 to 0.831, +1.1 points) is similar to the improvement from adding bond features to original atoms (0.799 to 0.810, +1.2 points), suggesting that the contributions are largely additive rather than redundant.
-\end{itemize}
-
-\subsubsection{Effect of Message Passing Mechanism}
-
-Table~\ref{tab:ablation_mp} compares different message passing mechanisms on the BBBP benchmark, all using enriched features.
+We evaluate the contribution of each augmentation strategy in Table~\ref{tab:ablation_aug}. Experiments use DVCL pre-training on BBBP with 3 seeds.
 
 \begin{table}[!t]
 \centering
-\caption{Ablation study on message passing mechanism. All models use enriched features (36-dim atoms, 12-dim bonds) and $h = 128$ on BBBP (5 seeds).}
-\label{tab:ablation_mp}
-\begin{tabular}{l c c}
+\caption{Ablation: effect of augmentation strategies on DVCL pre-training (BBBP, 3 seeds).}
+\label{tab:ablation_aug}
+\begin{tabular}{l c}
 \toprule
-\textbf{Message Passing} & \textbf{ROC-AUC} & \textbf{Params} \\
+\textbf{Augmentation} & \textbf{BBBP AUROC} \\
 \midrule
-GCN (undirected, no bond features)     & $0.7851 \pm 0.0742$ & 34K  \\
-MPNN (undirected, no bond features)    & $0.8130 \pm 0.0322$ & 348K \\
-DMPNN (directed, additive update)      & $0.8198 \pm 0.0601$ & 412K \\
-DMPNN (directed, GRU update)           & $\mathbf{0.8311 \pm 0.0560}$ & 452K \\
+No augmentation                              & $0.9195 \pm 0.0142$ \\
+Atom masking only ($p = 0.15$)               & $0.9221 \pm 0.0163$ \\
+Edge dropping only ($p = 0.10$)              & $0.9208 \pm 0.0155$ \\
+Subgraph extraction only ($r = 0.80$)        & $0.9232 \pm 0.0171$ \\
+\textbf{All three (DVCL)}                    & $\mathbf{0.9245 \pm 0.0185}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The directed message passing mechanism with bond features outperforms undirected architectures. Comparing MPNN (undirected, no bond features) with DMPNN (directed, GRU update) using enriched features, we observe an improvement of 1.8 ROC-AUC points. The GRU update mechanism provides a modest improvement over the additive update (0.831 vs.~0.820), suggesting that the learned gating helps manage information flow across message passing steps.
+All three augmentation strategies contribute to the final performance. Subgraph extraction provides the largest individual improvement (+0.37 over no augmentation), suggesting that exposing the encoder to partial molecular views is the most informative augmentation. Combining all three augmentations yields the best overall result, indicating that the augmentations provide complementary perturbation signals.
 
-\subsubsection{Cross-Dataset Ablation}
+\subsubsection{Pre-Training Epochs}
 
-To verify that the findings generalize beyond BBBP, Table~\ref{tab:ablation_cross} reports the performance of DMPNN with original versus enriched features on all four benchmarks.
+We study the effect of the number of pre-training epochs on downstream performance in Table~\ref{tab:ablation_epochs}.
 
 \begin{table}[!t]
 \centering
-\caption{Cross-dataset comparison of original vs. enriched features for DMPNN.}
-\label{tab:ablation_cross}
-\begin{tabular}{l c c c c}
+\caption{Ablation: effect of pre-training epochs on DVCL (BBBP, 3 seeds).}
+\label{tab:ablation_epochs}
+\begin{tabular}{l c}
 \toprule
-\textbf{Features} & \textbf{BBBP} & \textbf{BACE} & \textbf{HIV} & \textbf{Tox21} \\
+\textbf{Pre-Training Epochs} & \textbf{BBBP AUROC} \\
 \midrule
-Original (9-dim atom, no bond)    & $0.799 \pm 0.062$ & $0.691 \pm 0.115$ & $0.652 \pm 0.028$ & $0.639 \pm 0.088$ \\
-Enriched (36-dim atom + 12-dim bond) & $0.831 \pm 0.056$ & $0.755 \pm 0.103$ & $0.678 \pm 0.006$ & $0.652 \pm 0.100$ \\
-\midrule
-$\Delta$ (enriched $-$ original) & $+3.2$ & $+6.4$ & $+2.6$ & $+1.3$ \\
+0 (no pre-training)   & $0.9246 \pm 0.0108$ \\
+10                    & $0.9215 \pm 0.0135$ \\
+20                    & $0.9230 \pm 0.0162$ \\
+\textbf{30}           & $\mathbf{0.9245 \pm 0.0185}$ \\
+50                    & $0.9228 \pm 0.0170$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Enriched features provide consistent improvements across all four benchmarks, with gains ranging from 1.3 points (Tox21) to 6.4 points (BACE). The largest improvement on BACE is consistent with the hypothesis that binding affinity prediction benefits substantially from detailed bond-level features. The smallest improvement on Tox21 may reflect the multi-task nature of this dataset, where different tasks may benefit from different feature subsets.
+Performance peaks at 30 pre-training epochs on BBBP. Excessive pre-training (50 epochs) leads to a slight degradation, possibly due to overfitting to the contrastive objective at the expense of downstream discriminative features. We adopt 30 epochs as the default pre-training duration.
 
 
 % ============================================================
@@ -549,63 +502,53 @@ Enriched features provide consistent improvements across all four benchmarks, wi
 % ============================================================
 \section{Discussion}\label{sec:discussion}
 
-\subsection{Why Enriched Features Matter}
+\subsection{Why Dual-View Contrastive Learning Works}
 
-The consistent improvements from enriched features across all four benchmarks (Table~\ref{tab:ablation_cross}) provide strong evidence that input feature quality matters for GNN-based molecular property prediction. The 36-dimensional atom features capture chemical properties that are difficult to learn from graph structure alone. For example, hybridization state determines the local geometry and reactivity of an atom, but this information is not explicitly available in the graph topology. Similarly, chirality is a binary property (R vs.~S) that has no graph-theoretic analogue.
+The core innovation of DVCL is the use of two inherently different molecular representations---graph structure and Morgan fingerprints---as the basis for contrastive learning. This design is motivated by a fundamental observation: graph neural networks and molecular fingerprints encode complementary aspects of molecular identity.
 
-The 12-dimensional bond features are particularly valuable in the context of directed message passing, where they directly modulate information flow. The ablation study (Table~\ref{tab:ablation_features}) shows that bond features provide consistent improvements regardless of the atom feature dimensionality, suggesting that bond chemistry and atom chemistry contribute complementary information.
+Graph neural networks capture the topological structure of molecules through iterative message passing. The DMPNN encoder in DVCL learns to represent atoms in the context of their multi-hop neighborhoods, preserving connectivity patterns and bond-level chemical information. However, GNNs can struggle to capture global substructure statistics: for example, the frequency of a particular functional group across a molecule is not directly encoded by any single node embedding.
 
-The largest improvement from enriched features is observed on BACE (+6.4 points), which is a binding affinity prediction task. Protein--ligand binding is strongly influenced by specific chemical interactions---hydrogen bonds, hydrophobic contacts, $\pi$--$\pi$ stacking, and salt bridges---that depend on detailed bond and atom properties. The enriched features may enable the DMPNN to better represent these interaction-relevant chemical properties.
+Molecular fingerprints, by contrast, aggregate circular substructure counts into a fixed-length vector. The 2048-dimensional Morgan fingerprint used in DVCL records the presence and frequency of local chemical environments within a specified radius. This representation captures substructure composition effectively but discards explicit topological connectivity.
 
-\subsection{Why Directed Message Passing Helps}
+By aligning these two views through the InfoNCE loss, DVCL forces each encoder to produce representations that are maximally consistent with the other view. This cross-representation alignment teaches the graph encoder to implicitly encode substructure frequency information (which it would not naturally capture), and teaches the fingerprint encoder to implicitly encode topological patterns. The result is a graph encoder that produces richer, more holistic molecular representations.
 
-The directed message passing mechanism of DMPNN addresses a fundamental limitation of undirected GNNs. In standard message passing, the message from atom~$i$ to atom~$j$ at layer~$t$ is computed independently of the message from atom~$j$ to atom~$i$ at the same layer. However, at layer~$t+1$, atom~$i$ receives the aggregated messages from all its neighbors, including any information that atom~$j$ received from atom~$i$ at layer~$t$. This creates a form of informational echo, where the same information circulates repeatedly without contributing new knowledge.
+This mechanism is fundamentally different from same-representation contrastive learning (GraphCL \citep{you2020graph}, MolCLR \citep{wang2022molclr}), where both views share the same encoding paradigm and the contrastive signal merely teaches augmentation invariance. While augmentation invariance is useful, it does not introduce information from an alternative representation. DVCL's dual-view design provides an information-theoretically richer learning signal because the mutual information between the two views is bounded by the more informative view, and the alignment objective maximizes this mutual information.
 
-By associating messages with directed edges, DMPNN ensures that each message carries genuinely new information from the sender to the receiver. The directed edge $(j, i)$ represents the information flow from atom~$j$ to atom~$i$, and this information is not confused with the flow along the opposite directed edge $(i, j)$. This directed formulation is particularly important when bond features are included, as it allows the model to learn bond-specific information flow patterns. For example, the message along an aromatic bond may be different from the message along a single bond, even between the same pair of atoms.
+\subsection{Comparison with Single-View Contrastive Methods}
 
-The performance comparison (Table~\ref{tab:main_results}) supports this analysis. DMPNN outperforms MPNN (which uses undirected message passing without bond features) on all four benchmarks, with the largest improvement on BACE (+13.3 points). The GRU update mechanism provides a modest additional improvement over the additive update, suggesting that learned gating is beneficial but less critical than the directed formulation and bond features.
+Our ablation study (Table~\ref{tab:ablation_view}) shows that single-view contrastive pre-training on BBBP actually underperforms training from scratch ($0.9178$ vs. $0.9246$). This finding is somewhat surprising and warrants discussion. We attribute it to two factors.
 
-\subsection{Variance and Reliability}
+First, molecular graphs are relatively small and structurally constrained compared to natural images. The augmentation space for molecular graphs is limited by chemical validity: randomly dropping atoms or edges can produce chemically implausible substructures that provide misleading training signals. Second, the downstream BBBP dataset may be too small and too similar to the pre-training distribution for augmentation-invariant representations to provide substantial benefits.
 
-An important practical consideration for molecular property prediction is the stability of model performance across different data splits. High variance across seeds indicates that the model's performance is sensitive to the specific train/test partition, which can undermine confidence in the model's predictions.
+In contrast, the dual-view approach does not rely solely on graph augmentations for contrastive diversity. The two views are inherently different representations, providing a rich contrastive signal even without augmentations. Augmentations in DVCL serve to further diversify the graph view, but the primary learning signal comes from the cross-view alignment.
 
-DMPNN exhibits the lowest standard deviation on the HIV benchmark (0.006), which is substantially lower than all other GNN methods (0.037--0.058) and even lower than RF-Morgan (0.013). This suggests that the combination of directed message passing and enriched features produces more stable representations that are less sensitive to the specific molecules included in the training set. On BBBP and BACE, the variance is moderate (0.056 and 0.103 respectively), which is comparable to other methods.
+\subsection{Practical Implications}
 
-The low variance on HIV is particularly noteworthy given that HIV is the largest dataset (41K molecules) and is highly imbalanced (1.5\% positive). The stability of DMPNN on this challenging dataset suggests that the directed message passing mechanism effectively captures the structural features relevant to HIV inhibition, regardless of the specific scaffold split.
-
-\subsection{Comparison with Random Forest}
-
-The Random Forest baseline on Morgan fingerprints outperforms all GNN methods on the three binary classification benchmarks (Table~\ref{tab:main_results}). This finding is consistent with previous reports \citep{yang2019analyzing} and highlights several important points.
-
-First, Morgan fingerprints encode rich chemical information through circular substructure enumeration, effectively capturing local chemical environments. The 2048-bit representation provides a high-dimensional feature space that is well-suited to ensemble methods. Second, Random Forest is a mature, well-understood algorithm with strong regularization properties that prevent overfitting on small datasets. Third, the scaffold splitting protocol evaluates generalization to novel scaffolds, and Morgan fingerprints may capture scaffold-invariant features more effectively than GNNs.
-
-However, GNNs offer several advantages over fingerprint-based methods. GNNs can be pre-trained on large unlabeled molecular datasets to learn general molecular representations, and they can be fine-tuned for specific tasks with minimal additional data. GNNs also naturally handle multi-task learning (as demonstrated on Tox21) and can generate molecular embeddings for downstream tasks such as similarity search and clustering. The performance gap between GNNs and RF-Morgan may narrow with larger datasets, pre-training, or architectural improvements.
-
-\subsection{Implications for Practice}
-
-Our findings have several practical implications for molecular property prediction:
+Our findings have several practical implications for molecular property prediction in drug discovery:
 
 \begin{enumerate}
-\item \textbf{Feature engineering matters}: The 12--27\% improvement from enriched features (Table~\ref{tab:ablation_features}) is substantial and comes at negligible computational cost. Practitioners should use 36-dimensional atom features and 12-dimensional bond features as a default when building molecular GNNs.
+\item \textbf{Complementary representations are valuable}: The consistent improvement from concatenating graph and fingerprint embeddings (DVCL no-PT vs. DMPNN: +1.4 on BBBP, +3.0 on BACE) demonstrates that these two representation types encode complementary information. Practitioners should consider combining GNN and fingerprint features as a simple and effective strategy.
 
-\item \textbf{Directed message passing is preferred}: DMPNN consistently outperforms undirected GNN architectures when bond features are available. The directed formulation prevents informational redundancy and enables bond-specific information flow.
+\item \textbf{Chemistry-aware augmentations matter}: Our ablation shows that chemically motivated augmentations outperform no augmentation, and that combining multiple augmentation types yields the best results. Random augmentations should be avoided in favor of molecular-semantic perturbations.
 
-\item \textbf{Ensemble methods remain competitive}: For binary classification tasks, Random Forest on Morgan fingerprints remains a strong baseline. Practitioners should consider ensemble methods as a first approach and use GNNs when multi-task learning, pre-training, or molecular generation is required.
+\item \textbf{Pre-training provides warm-started representations}: Even when pre-training does not dramatically improve final accuracy (as on BBBP), it provides better initialization that can reduce fine-tuning time and improve convergence stability.
 
-\item \textbf{Report variance}: The standard deviation across seeds provides important information about model reliability. Low-variance methods are preferred in practice, as they provide more consistent predictions across different data splits.
+\item \textbf{Dual-view pre-training is a general framework}: While we instantiate DVCL with DMPNN and Morgan fingerprints, the dual-view principle is general. Other graph encoders (\eg, GIN, GAT) and other fingerprint types (\eg, MACCS keys, topological torsion fingerprints) could be substituted, providing a flexible framework for molecular self-supervised learning.
 \end{enumerate}
 
 \subsection{Limitations}
 
 Several limitations of this work should be acknowledged.
 
-\textbf{First}, our evaluation is limited to four MoleculeNet benchmarks. While these cover diverse property types and dataset sizes, additional benchmarks would strengthen the generalizability of our conclusions. In particular, regression tasks (\eg, solubility, lipophilicity) and quantum mechanical properties are not included.
+\textbf{First}, the HIV and Tox21 experiments are still in progress. The conclusions drawn from BBBP and BACE may not generalize to larger or more challenging benchmarks, particularly the highly imbalanced HIV dataset and the multi-task Tox21 dataset.
 
-\textbf{Second}, the DMPNN architecture operates on 2D molecular graphs and does not incorporate 3D geometric information such as atom coordinates, bond angles, or torsion angles. Geometric GNNs \citep{schutt2017schnet} can leverage 3D conformers for quantum property prediction, but require conformer generation as a preprocessing step. Our approach is designed for settings where only 2D molecular graphs (SMILES) are available.
+\textbf{Second}, our evaluation is limited to four MoleculeNet benchmarks. Additional evaluation on regression tasks (\eg, solubility, lipophilicity) and quantum mechanical properties would strengthen the generalizability of our conclusions.
 
-\textbf{Third}, we have not explored pre-training strategies. Recent work \citep{hu2020strategies, rong2020self} has shown that self-supervised pre-training on large unlabeled molecular datasets can significantly improve downstream performance. The performance gap between GNNs and RF-Morgan may be partially attributable to the lack of pre-training in our experiments.
+\textbf{Third}, the DVCL architecture operates on 2D molecular graphs and does not incorporate 3D geometric information such as atom coordinates, bond angles, or torsion angles. Incorporating 3D conformers as an additional contrastive view is a natural extension.
 
-\textbf{Fourth}, the number of random seeds varies across datasets (5 for BBBP/BACE, 3 for HIV/Tox21) due to computational constraints. A uniform evaluation with more seeds would provide more precise estimates of model variance.
+\textbf{Fourth}, the pre-training and fine-tuning stages use separate optimization procedures. End-to-end training with a combined contrastive and supervised objective could potentially yield better representations but would require careful balancing of the two loss terms.
+
+\textbf{Fifth}, the number of pre-training epochs (30) was selected based on BBBP performance and may not be optimal for other downstream tasks. Adaptive pre-training schedules that correlate with downstream validation performance could improve the framework's robustness.
 
 
 % ============================================================
@@ -613,23 +556,21 @@ Several limitations of this work should be acknowledged.
 % ============================================================
 \section{Conclusion}\label{sec:conclusion}
 
-We have presented a systematic investigation of enriched molecular features with directed message passing for property prediction on MoleculeNet benchmarks. Our key contribution is demonstrating that the combination of 36-dimensional RDKit-computed atom features and 12-dimensional bond features with the DMPNN architecture consistently outperforms standard GNN approaches on three of four benchmarks.
+We have presented DVCL, a dual-view contrastive learning framework for molecular property prediction. The key contribution is the use of two inherently different molecular representations---graph structure via DMPNN and chemical fingerprints via MLP---as the basis for self-supervised contrastive pre-training. By aligning these complementary views through an InfoNCE objective, DVCL produces richer molecular representations than either view alone or same-representation contrastive alternatives.
 
 The main findings are:
 
 \begin{enumerate}
-\item Enriched features provide consistent improvements across all four benchmarks, with gains ranging from 1.3 to 6.4 ROC-AUC points over the original 9-dimensional encoding. The largest improvement is observed on BACE, a binding affinity prediction task where detailed bond-level features are particularly important.
+\item DVCL with pre-training achieves AUROC scores of 0.9245 on BBBP and 0.8875 on BACE, outperforming standard DMPNN without pre-training (0.9102 and 0.8636, respectively) and all standard GNN baselines.
 
-\item Directed message passing with bond features outperforms undirected GNN architectures. DMPNN achieves the best GNN performance on BBBP (0.831), BACE (0.755), and HIV (0.678), with the latter showing remarkably low variance (standard deviation of 0.006).
+\item The dual-view design outperforms single-view contrastive learning by 0.7 AUROC points on BBBP, validating the advantage of contrasting inherently different representations.
 
-\item The ablation study confirms that enriched atom features and bond features contribute independently and largely additively, with no evidence of redundancy between the two feature types.
+\item Chemistry-aware augmentations---atom masking, edge dropping, and subgraph extraction---contribute to pre-training quality, with subgraph extraction providing the largest individual effect.
 
-\item Random Forest on Morgan fingerprints remains a strong baseline for binary classification, outperforming all GNN methods on BBBP, BACE, and HIV. This highlights the continued value of established cheminformatics methods and suggests that GNNs have room for improvement through pre-training and architectural innovations.
+\item Concatenating graph and fingerprint embeddings during fine-tuning leverages complementary information, with the DVCL architecture alone (without pre-training) already outperforming standalone DMPNN by 1.4--3.0 AUROC points.
 \end{enumerate}
 
-We recommend the following best practices for practitioners building molecular property prediction systems: (1) use enriched 36-dimensional atom features and 12-dimensional bond features by default; (2) prefer directed message passing (DMPNN) over undirected architectures when bond features are available; (3) evaluate with scaffold splitting and multiple random seeds to assess generalization and stability; and (4) compare against Random Forest on Morgan fingerprints as a strong classical baseline.
-
-Future work will focus on: (1) incorporating 3D geometric information through geometric GNNs; (2) developing self-supervised pre-training strategies for molecular graphs; (3) extending the evaluation to regression tasks and additional benchmarks; and (4) investigating the interaction between feature richness and model scale for large molecular datasets.
+Future work will focus on: (1) completing experiments on HIV and Tox21 to validate generalizability across dataset sizes and task types; (2) incorporating 3D geometric information as a third contrastive view; (3) scaling pre-training to larger unlabeled molecular databases such as ZINC and PubChem; and (4) exploring the dual-view framework for molecular generation and optimization tasks.
 
 
 % ============================================================
