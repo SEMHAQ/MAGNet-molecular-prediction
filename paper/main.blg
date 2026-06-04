@@ -6,52 +6,52 @@ Database file #1: references.bib
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Warning--empty pages in duvenaud2015convolutional
 Warning--empty pages in hamilton2017inductive
+Warning--empty pages in hu2020strategies
 Warning--empty pages in kingma2015adam
 Warning--empty pages in kipf2017semi
-Warning--empty pages in liu2021graph
+Warning--empty pages in li2016gated
 Warning--empty pages in schutt2017schnet
 Warning--empty pages in velickovic2018graph
 Warning--empty pages in xu2018powerful
-Warning--empty pages in ying2021transformer
 You've used 18 entries,
             2990 wiz_defined-function locations,
-            829 strings with 9920 characters,
-and the built_in function-call counts, 14531 in all, are:
-= -- 1008
-> -- 820
-< -- 5
-+ -- 314
-- -- 294
-* -- 1716
-:= -- 2143
+            830 strings with 9713 characters,
+and the built_in function-call counts, 14100 in all, are:
+= -- 998
+> -- 756
+< -- 7
++ -- 292
+- -- 270
+* -- 1639
+:= -- 2072
 add.period$ -- 43
 call.type$ -- 18
-change.case$ -- 187
+change.case$ -- 179
 chr.to.int$ -- 18
 cite$ -- 27
-duplicate$ -- 1012
-empty$ -- 931
-format.name$ -- 350
-if$ -- 2643
+duplicate$ -- 996
+empty$ -- 923
+format.name$ -- 330
+if$ -- 2577
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 215
+missing$ -- 207
 newline$ -- 94
 num.names$ -- 72
-pop$ -- 416
+pop$ -- 408
 preamble$ -- 1
-purify$ -- 169
+purify$ -- 161
 quote$ -- 0
 skip$ -- 303
 stack$ -- 0
-substring$ -- 450
-swap$ -- 788
+substring$ -- 456
+swap$ -- 758
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 162
 warning$ -- 9
-while$ -- 73
+while$ -- 74
 width$ -- 0
 write$ -- 246
 (There were 9 warnings)

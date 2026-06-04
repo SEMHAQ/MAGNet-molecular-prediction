@@ -12,13 +12,13 @@
 \providecommand{\bibinfo}[2]{#2}
 \ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
 %Type = Article
-\bibitem[{Chen et~al.(2022)Chen, Wei, Li and Chen}]{chen2022multi}
-\bibinfo{author}{Chen, J.}, \bibinfo{author}{Wei, Z.}, \bibinfo{author}{Li,
-  H.}, \bibinfo{author}{Chen, E.}, \bibinfo{year}{2022}.
-\newblock \bibinfo{title}{Multi-scale graph neural networks for molecular
-  property prediction}.
-\newblock \bibinfo{journal}{Briefings in Bioinformatics} \bibinfo{volume}{23},
-  \bibinfo{pages}{bbac467}.
+\bibitem[{Bemis and Murcko(1996)}]{bemis1996properties}
+\bibinfo{author}{Bemis, G.W.}, \bibinfo{author}{Murcko, M.A.},
+  \bibinfo{year}{1996}.
+\newblock \bibinfo{title}{The properties of known drugs. 1. chemical
+  frameworks}.
+\newblock \bibinfo{journal}{Journal of Medicinal Chemistry}
+  \bibinfo{volume}{39}, \bibinfo{pages}{2887--2893}.
 %Type = Inproceedings
 \bibitem[{Duvenaud et~al.(2015)Duvenaud, Maclaurin, Iparraguirre, Bombarell,
   Hirzel, Aspuru-Guzik and Adams}]{duvenaud2015convolutional}
@@ -47,6 +47,16 @@
   in: \bibinfo{booktitle}{Advances in Neural Information Processing Systems
   (NeurIPS)}.
 %Type = Inproceedings
+\bibitem[{Hu et~al.(2020)Hu, Liu, Gomes, Zitnik, Liang, Pande and
+  Leskovec}]{hu2020strategies}
+\bibinfo{author}{Hu, W.}, \bibinfo{author}{Liu, B.}, \bibinfo{author}{Gomes,
+  J.}, \bibinfo{author}{Zitnik, M.}, \bibinfo{author}{Liang, P.},
+  \bibinfo{author}{Pande, V.}, \bibinfo{author}{Leskovec, J.},
+  \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{Strategies for pre-training graph neural networks},
+  in: \bibinfo{booktitle}{International Conference on Learning Representations
+  (ICLR)}.
+%Type = Inproceedings
 \bibitem[{Kingma and Ba(2015)}]{kingma2015adam}
 \bibinfo{author}{Kingma, D.P.}, \bibinfo{author}{Ba, J.}, \bibinfo{year}{2015}.
 \newblock \bibinfo{title}{Adam: A method for stochastic optimization}, in:
@@ -60,24 +70,19 @@
   convolutional networks}, in: \bibinfo{booktitle}{International Conference on
   Learning Representations (ICLR)}.
 %Type = Inproceedings
-\bibitem[{Liu et~al.(2021)Liu, Wang, Liu, Lin, Zhang, Oztekin and
-  Ji}]{liu2021graph}
-\bibinfo{author}{Liu, Y.}, \bibinfo{author}{Wang, L.}, \bibinfo{author}{Liu,
-  M.}, \bibinfo{author}{Lin, Y.}, \bibinfo{author}{Zhang, X.},
-  \bibinfo{author}{Oztekin, B.}, \bibinfo{author}{Ji, S.},
-  \bibinfo{year}{2021}.
-\newblock \bibinfo{title}{Graph transformers for molecule generation}, in:
-  \bibinfo{booktitle}{Advances in Neural Information Processing Systems
-  (NeurIPS)}.
+\bibitem[{Li et~al.(2016)Li, Zemel, Brockschmidt and Tarlow}]{li2016gated}
+\bibinfo{author}{Li, Y.}, \bibinfo{author}{Zemel, R.},
+  \bibinfo{author}{Brockschmidt, M.}, \bibinfo{author}{Tarlow, D.},
+  \bibinfo{year}{2016}.
+\newblock \bibinfo{title}{Gated graph sequence neural networks}, in:
+  \bibinfo{booktitle}{International Conference on Learning Representations
+  (ICLR)}.
 %Type = Article
-\bibitem[{Ma et~al.(2022)Ma, Wang, Aggarwal and Tang}]{ma2022multi}
-\bibinfo{author}{Ma, Y.}, \bibinfo{author}{Wang, S.},
-  \bibinfo{author}{Aggarwal, C.C.}, \bibinfo{author}{Tang, J.},
-  \bibinfo{year}{2022}.
-\newblock \bibinfo{title}{Multi-scale feature fusion for graph neural
-  networks}.
-\newblock \bibinfo{journal}{IEEE Transactions on Knowledge and Data
-  Engineering} \bibinfo{volume}{34}, \bibinfo{pages}{3864--3877}.
+\bibitem[{Rogers and Hahn(2010)}]{rogers2010extended}
+\bibinfo{author}{Rogers, D.}, \bibinfo{author}{Hahn, M.}, \bibinfo{year}{2010}.
+\newblock \bibinfo{title}{Extended-connectivity fingerprints}.
+\newblock \bibinfo{journal}{Journal of Chemical Information and Modeling}
+  \bibinfo{volume}{50}, \bibinfo{pages}{742--754}.
 %Type = Inproceedings
 \bibitem[{Rong et~al.(2020)Rong, Bian, Xu, Xie, Wei, Huang and
   Huang}]{rong2020self}
@@ -156,16 +161,6 @@
   property prediction}.
 \newblock \bibinfo{journal}{Journal of Chemical Information and Modeling}
   \bibinfo{volume}{59}, \bibinfo{pages}{3370--3388}.
-%Type = Inproceedings
-\bibitem[{Ying et~al.(2021)Ying, Cai, Luo, Zheng, Ke, He, Shen and
-  Liu}]{ying2021transformer}
-\bibinfo{author}{Ying, C.}, \bibinfo{author}{Cai, T.}, \bibinfo{author}{Luo,
-  S.}, \bibinfo{author}{Zheng, S.}, \bibinfo{author}{Ke, G.},
-  \bibinfo{author}{He, D.}, \bibinfo{author}{Shen, Y.}, \bibinfo{author}{Liu,
-  T.Y.}, \bibinfo{year}{2021}.
-\newblock \bibinfo{title}{Do transformers really perform bad for graph
-  representation?}, in: \bibinfo{booktitle}{Advances in Neural Information
-  Processing Systems (NeurIPS)}.
 %Type = Article
 \bibitem[{Zhang et~al.(2020)Zhang, Chen, Li, Pan, Chen, Li and
   Chen}]{zhang2020graph}
